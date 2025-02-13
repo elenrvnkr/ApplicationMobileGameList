@@ -27,8 +27,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 import com.insa.mygamelist.GameInfor
 import com.insa.mygamelist.data.IGDB
@@ -38,7 +36,7 @@ import com.insa.mygamelist.data.IGDB
 fun GameList(navController: NavController) {
     Scaffold(topBar = {
         TopAppBar(colors = topAppBarColors(
-            containerColor = Color.Magenta,
+            containerColor = Color(144,122,200),
             titleContentColor = Color.Black,
         ), title = { Text("My Games List") })
     }, modifier = Modifier.fillMaxSize()) { innerPadding ->
@@ -62,7 +60,8 @@ fun GameList(navController: NavController) {
                         ) {
                             AsyncImage(
                                 model = "https:${IGDB.covers.find { it.id == IGDB.games[index].cover }?.url}",
-                                modifier = Modifier.padding(1.dp),
+                                modifier = Modifier.padding(1.dp)
+                                    .clip(RoundedCornerShape(12.dp)),
                                 contentDescription = null
                             )
                         }
@@ -80,7 +79,7 @@ fun GameList(navController: NavController) {
                                 .joinToString(separator = ", ") { it.name },
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.padding(2.dp)
+                                modifier = Modifier.padding(5.dp)
                             )
                         }
                     }
