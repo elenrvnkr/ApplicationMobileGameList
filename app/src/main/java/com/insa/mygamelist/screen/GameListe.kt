@@ -45,35 +45,6 @@ import com.insa.mygamelist.data.IGDB
 import com.insa.mygamelist.favoriteGames
 
 
-@Composable
-fun SearchBar(searchQuery: String, onSearchQueryChanged: (String) -> Unit) {
-    TextField(
-        value = searchQuery,
-        textStyle = TextStyle(fontSize = 17.sp),
-        onValueChange = { onSearchQueryChanged(it) },
-        singleLine = true,
-        placeholder = {
-            Text(
-                "Rechercher un jeu...",
-                fontSize = 17.sp
-            )
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(5.dp),
-        trailingIcon = {
-            if (searchQuery.isNotEmpty()) {
-                IconButton(onClick = { onSearchQueryChanged("") }) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Effacer la recherche"
-                    )
-                }
-            }
-        }
-    )
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GameList(navController: NavController) {
@@ -158,6 +129,7 @@ fun GameList(navController: NavController) {
                                     text = filteredGames[index].name,
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.W600,
+                                    color = Color.Black,
                                     style = TextStyle(textDecoration = TextDecoration.Underline),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
@@ -166,6 +138,7 @@ fun GameList(navController: NavController) {
                                 Text(text = "Genres : " + IGDB.genres.filter { it.id in filteredGames[index].genres }
                                     .joinToString(separator = ", ") { it.name },
                                     maxLines = 2,
+                                    color = Color.Black,
                                     overflow = TextOverflow.Ellipsis,
                                     modifier = Modifier.padding(5.dp)
                                 )
@@ -196,17 +169,3 @@ fun GameList(navController: NavController) {
     }
 }
 
-@Composable
-fun NoMatchScreen() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "No match :(",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Gray
-        )
-    }
-}
