@@ -23,8 +23,8 @@ data class Game1(
 
 interface IGDBService {
     @Headers(
-        "Client-ID: qlo915d37u9c6cdlq0i1tk0y50q2z6",
-        "Authorization: Bearer q7yklh4qqs4g4ztqac3h8h09io5qb8",
+        "Client-ID: AREMPLACER",
+        "Authorization: Bearer AREMPLACER",
         "Content-Type: application/json"
     )
     @POST("games")
