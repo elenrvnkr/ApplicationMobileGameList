@@ -41,6 +41,7 @@ import com.insa.mygamelist.favoriteGames
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun GameInfo(navController: NavController, gamei: GameInfor) {
+
     val jeu = IGDB.games.find { it.id == gamei.id }
     val isFavorite = jeu?.let { favoriteGames.contains(it.id) }
     Scaffold(
@@ -135,4 +136,5 @@ fun GameInfo(navController: NavController, gamei: GameInfor) {
             }
         }
     }
+
 }

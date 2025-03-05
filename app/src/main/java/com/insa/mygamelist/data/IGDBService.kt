@@ -1,19 +1,22 @@
 package com.insa.mygamelist.data
 
-import okhttp3.OkHttpClient
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.http.Body
+import retrofit2.http.Header
+import retrofit2.http.POST
 
-object IGDBService {
-    private val client = OkHttpClient.Builder()
-        .addInterceptor(AuthInterceptor())
-        .build()
+interface IGDBService {
+    @POST("games")
+    suspend fun getGames(@Header("Authorization") auth: String, @Header("Client-ID") clientId: String, @Body body: String): List<Game>?
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl("https://api.igdb.com/v4/")
-        .addConverterFactory(GsonConverterFactory.create())
-        .client(client)
-        .build()
+    @POST("genres")
+    suspend fun getGenres(@Header("Authorization") auth: String,@Header("Client-ID") clientId: String, @Body body: String): List<Genre>?
 
-    val api: IGDBApi = retrofit.create(IGDBApi::class.java)
+    @POST("covers")
+    suspend fun getCovers(@Header("Authorization") auth: String,@Header("Client-ID") clientId: String, @Body body: String): List<Cover>?
+
+    @POST("platforms")
+    suspend fun getPlatforms(@Header("Authorization") auth: String,@Header("Client-ID") clientId: String, @Body body: String): List<Platform>?
+
+    @POST("platform_logos")
+    suspend fun getPlatformLogos(@Header("Authorization") auth: String,@Header("Client-ID") clientId: String, @Body body: String): List<PlatformLogo>?
 }

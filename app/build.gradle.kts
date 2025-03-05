@@ -73,6 +73,8 @@ dependencies {
     implementation(libs.okhttp.logging.interceptor)
     implementation(libs.retrofit.kotlinx.serialization)
     implementation(libs.converter.gson)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.retrofit.v290)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

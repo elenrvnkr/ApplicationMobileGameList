@@ -1,14 +1,27 @@
 package com.insa.mygamelist.data
 
-import okhttp3.Interceptor
-import okhttp3.Response
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
-class AuthInterceptor : Interceptor {
-    override fun intercept(chain: Interceptor.Chain): Response {
-        val request = chain.request().newBuilder()
-            .addHeader("Client-ID", clientid)
-            .addHeader("Authorization", "Bearer $bearertoken")
+object RetrofitClient {
+    private const val BASE_URL = "https://api.igdb.com/v4/"
+
+    val instance: IGDBService by lazy {
+        val logging = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+        val client = OkHttpClient.Builder()
+            .addInterceptor(logging)
             .build()
-        return chain.proceed(request)
+
+        Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(client)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+            .create(IGDBService::class.java)
     }
 }

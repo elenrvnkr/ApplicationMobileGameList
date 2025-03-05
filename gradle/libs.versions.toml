@@ -10,10 +10,12 @@ espressoCore = "3.6.1"
 gson = "2.11.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
+kotlinxCoroutinesAndroid = "1.9.0"
 lifecycleRuntimeKtx = "2.8.7"
 composeNavigation = "2.8.4"
 kotlinx-serialization = "1.7.3"
 kotlinx-datetime = "0.6.1"
+retrofitVersion = "2.9.0"
 viewmodel-compose = "2.8.7"
 retrofit = "2.11.0"
 okhttp-logging = "4.12.0"
@@ -40,11 +42,13 @@ gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 coil-test = { group = "io.coil-kt.coil3", name = "coil-test", version.ref = "coil" }
+kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-android", version.ref = "kotlinxCoroutinesAndroid" }
 kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-datetime = { group = "org.jetbrains.kotlinx", name = "kotlinx-datetime", version.ref = "kotlinx-datetime" }
 retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
 retrofit-kotlinx-serialization = { group = 'com.squareup.retrofit2', name = 'converter-kotlinx-serialization', version.ref = 'retrofit' }
 okhttp-logging-interceptor = { group = "com.squareup.okhttp3", name = "logging-interceptor", version.ref = "okhttp-logging" }
+retrofit-v290 = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofitVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

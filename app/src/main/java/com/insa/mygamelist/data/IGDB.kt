@@ -1,10 +1,72 @@
 package com.insa.mygamelist.data
 
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.insa.mygamelist.R
 
+
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+/*
+var isloading by mutableStateOf(false)
+
+
+object IGDB {
+    var covers by mutableStateOf<List<Cover>>(emptyList())
+    var genres by mutableStateOf<List<Genre>>(emptyList())
+    var games by mutableStateOf<List<Game>>(emptyList())
+    var platforms by mutableStateOf<List<Platform>>(emptyList())
+    var platformetlogo by mutableStateOf<List<Platformetlogo>>(emptyList())
+    var platformlogos by mutableStateOf<List<PlatformLogo>>(emptyList())
+
+    fun load(context: Context, authToken: String) {
+        isloading = true
+        val scope = CoroutineScope(Dispatchers.IO)
+        scope.launch {
+            try {
+                val gamesResponse = RetrofitClient.instance.getGames("Bearer $authToken",clientId = clientid, "fields *;limit 100;")
+                val genresResponse = RetrofitClient.instance.getGenres("Bearer $authToken", clientId = clientid,"fields *;limit 100;")
+                val coversResponse = RetrofitClient.instance.getCovers("Bearer $authToken", clientId = clientid,"fields *;limit 100;")
+                val platformsResponse = RetrofitClient.instance.getPlatforms("Bearer $authToken", clientId = clientid,"fields *;limit 100;")
+                val platformLogosResponse = RetrofitClient.instance.getPlatformLogos("Bearer $authToken", clientId = clientid,"fields *;limit 100;")
+
+                withContext(Dispatchers.Main) {
+
+
+                // Mettre à jour les propriétés
+                    games = gamesResponse ?: emptyList()
+                    genres = genresResponse ?: emptyList()
+                    covers = coversResponse ?: emptyList()
+                    platforms = platformsResponse ?: emptyList()
+                    platformlogos = platformLogosResponse ?: emptyList()
+
+
+                    // Mettre à jour platformetlogo
+                platformetlogo = platforms.flatMap { platform ->
+                    platformlogos.filter { it.id == platform.platform_logo }
+                        .map { Platformetlogo(platform.id, platform.name, platform.platform_logo, it.url) }
+                }
+                    isloading = false
+            }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "Erreur de chargement des données", Toast.LENGTH_SHORT).show()
+                    isloading = false
+                }
+            }
+        }
+    }
+}
+*/
 object IGDB {
 
     lateinit var covers: List<Cover>
