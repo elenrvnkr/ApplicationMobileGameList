@@ -3,32 +3,15 @@ package com.insa.mygamelist.data
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
-import com.insa.mygamelist.R
 
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import com.api.igdb.apicalypse.APICalypse
-import com.api.igdb.apicalypse.Sort
-import com.api.igdb.exceptions.RequestException
-import com.api.igdb.request.IGDBWrapper
-import com.api.igdb.request.IGDBWrapper.apiJsonRequest
-import com.api.igdb.request.IGDBWrapper.apiProtoRequest
-import com.api.igdb.request.covers
-import com.api.igdb.request.games
-import com.api.igdb.request.genres
-import com.api.igdb.request.platformLogos
-import com.api.igdb.request.platforms
 import kotlinx.coroutines.SupervisorJob
-import okhttp3.RequestBody
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 
@@ -41,11 +24,15 @@ object IGDB {
     var platformlogos = mutableStateListOf<PlatformLogo>()
     var platformetlogo = mutableStateListOf<Platformetlogo>()
 
+    var isLoading = mutableStateOf(false)
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     fun load(context: Context) {
 
         scope.launch {
+            withContext(Dispatchers.Main) {
+                isLoading.value = true // Activer le chargement
+            }
             try {
                 val gamesResponse = fetchGames()
                 val genresResponse = fetchGenres()
@@ -61,24 +48,28 @@ object IGDB {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "Erreur de chargement des données: ${e.message}", Toast.LENGTH_LONG).show()
                 }
-            }
-        }
+            }finally {
+                withContext(Dispatchers.Main) {
+                    isLoading.value = false
+                }
+        }}
     }
 
     private suspend fun fetchGames(): List<Game> {
-        val body = "fields id, cover, first_release_date, genres, name, platforms, summary, total_rating; limit 100;"
+        val body = "fields id, cover, first_release_date, genres, name, platforms, summary, total_rating; limit 500;"
         val requestBody = body.toRequestBody("text/plain".toMediaType())
         return RetrofitClient.instance.getGames("Bearer $bearertoken", clientId = clientid, body = requestBody) ?: emptyList()
+
     }
 
     private suspend fun fetchGenres(): List<Genre> {
-        val body = "fields id, name; limit 500;"
+        val body = "fields id, name; limit 500; sort rating desc;"
         val requestBody = body.toRequestBody("text/plain".toMediaType())
         return RetrofitClient.instance.getGenres("Bearer $bearertoken", clientId = clientid, requestBody) ?: emptyList()
     }
 
     private suspend fun fetchCovers(): List<Cover> {
-        val body = "fields id, url; limit 500;"
+        val body = "fields id, url; limit 500; sort rating desc;"
         val requestBody = body.toRequestBody("text/plain".toMediaType())
         return RetrofitClient.instance.getCovers("Bearer $bearertoken", clientId = clientid, requestBody) ?: emptyList()
     }
@@ -104,6 +95,7 @@ object IGDB {
     ) {
         games.clear()
         games.addAll(gamesResponse)
+
 
         genres.clear()
         genres.addAll(genresResponse)
