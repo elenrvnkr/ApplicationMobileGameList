@@ -125,7 +125,11 @@ fun GameInfo(navController: NavController, gamei: GameInfor) {
                         fontSize = 15.sp
                     )
                     LazyRow(modifier = Modifier.fillMaxWidth()) {
-                        items(jeu.platforms.size) { index ->
+                        items(if (jeu.platforms != null) {
+                            jeu.platforms.size
+                        } else {
+                            0
+                        }) { index ->
                             AsyncImage(
                                 model = "https:${IGDB.platformetlogo.find { it.id == jeu.platforms[index] }?.url}",
                                 modifier = Modifier
@@ -135,7 +139,7 @@ fun GameInfo(navController: NavController, gamei: GameInfor) {
                         }
                     }
                     Text(
-                        text = jeu.summary?: "Valeur par défaut",
+                        text = jeu.summary?: "Résumé par défaut",
                         fontFamily = FontFamily.Serif,
                         modifier = Modifier.padding(10.dp),
                         fontSize = 20.sp
