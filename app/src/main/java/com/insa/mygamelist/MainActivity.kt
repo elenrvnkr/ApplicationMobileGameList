@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController, startDestination = GameListe) {
                         composable<GameListe> {
                             GameList(
-                                navController,context = this@MainActivity) }
+                                navController) }
                         composable<GameInfor> {
                             val game = it.toRoute<GameInfor>()
                             GameInfo(

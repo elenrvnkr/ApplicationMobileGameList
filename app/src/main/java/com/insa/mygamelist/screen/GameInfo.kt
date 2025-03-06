@@ -97,7 +97,7 @@ fun GameInfo(navController: NavController, gamei: GameInfor) {
             ) {
                 if (jeu != null) {
                     Text(
-                        text = jeu.name,
+                        text = jeu.name?: "Valeur par défaut",
                         modifier = Modifier.padding(10.dp),
                         fontSize = 25.sp,
                         fontWeight = FontWeight.W900,
@@ -110,8 +110,8 @@ fun GameInfo(navController: NavController, gamei: GameInfor) {
                             .size(250.dp),
                         contentDescription = null
                     )
-                    Text(text = IGDB.genres.filter { it.id in jeu.genres }
-                        .joinToString(separator = ", ") { it.name },
+                    Text(text = IGDB.genres.filter { it.id in jeu.genres}
+                        .joinToString(separator = ", ") { it.name }?: "Valeur par défaut",
                         modifier = Modifier.padding(2.dp),
                         fontStyle = FontStyle.Italic,
                         fontSize = 15.sp
@@ -127,7 +127,7 @@ fun GameInfo(navController: NavController, gamei: GameInfor) {
                         }
                     }
                     Text(
-                        text = jeu.summary,
+                        text = jeu.summary?: "Valeur par défaut",
                         fontFamily = FontFamily.Serif,
                         modifier = Modifier.padding(10.dp),
                         fontSize = 20.sp

@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.google.gson.Gson
@@ -15,58 +16,170 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-
-/*
-var isloading by mutableStateOf(false)
+import com.api.igdb.apicalypse.APICalypse
+import com.api.igdb.apicalypse.Sort
+import com.api.igdb.exceptions.RequestException
+import com.api.igdb.request.IGDBWrapper
+import com.api.igdb.request.IGDBWrapper.apiJsonRequest
+import com.api.igdb.request.IGDBWrapper.apiProtoRequest
+import com.api.igdb.request.covers
+import com.api.igdb.request.games
+import com.api.igdb.request.genres
+import com.api.igdb.request.platformLogos
+import com.api.igdb.request.platforms
+import kotlinx.coroutines.SupervisorJob
+import okhttp3.RequestBody
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 
 
 object IGDB {
-    var covers by mutableStateOf<List<Cover>>(emptyList())
-    var genres by mutableStateOf<List<Genre>>(emptyList())
-    var games by mutableStateOf<List<Game>>(emptyList())
-    var platforms by mutableStateOf<List<Platform>>(emptyList())
-    var platformetlogo by mutableStateOf<List<Platformetlogo>>(emptyList())
-    var platformlogos by mutableStateOf<List<PlatformLogo>>(emptyList())
+    var covers = mutableStateListOf<Cover>()
+    var genres = mutableStateListOf<Genre>()
+    var games = mutableStateListOf<Game>()
+    var platforms = mutableStateListOf<Platform>()
+    var platformlogos = mutableStateListOf<PlatformLogo>()
+    var platformetlogo = mutableStateListOf<Platformetlogo>()
 
-    fun load(context: Context, authToken: String) {
-        isloading = true
-        val scope = CoroutineScope(Dispatchers.IO)
+
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    fun load(context: Context) {
+
         scope.launch {
             try {
-                val gamesResponse = RetrofitClient.instance.getGames("Bearer $authToken",clientId = clientid, "fields *;limit 100;")
-                val genresResponse = RetrofitClient.instance.getGenres("Bearer $authToken", clientId = clientid,"fields *;limit 100;")
-                val coversResponse = RetrofitClient.instance.getCovers("Bearer $authToken", clientId = clientid,"fields *;limit 100;")
-                val platformsResponse = RetrofitClient.instance.getPlatforms("Bearer $authToken", clientId = clientid,"fields *;limit 100;")
-                val platformLogosResponse = RetrofitClient.instance.getPlatformLogos("Bearer $authToken", clientId = clientid,"fields *;limit 100;")
+                val gamesResponse = fetchGames()
+                val genresResponse = fetchGenres()
+                val coversResponse = fetchCovers()
+                val platformsResponse = fetchPlatforms()
+                val platformLogosResponse = fetchPlatformLogos()
 
                 withContext(Dispatchers.Main) {
-
-
-                // Mettre à jour les propriétés
-                    games = gamesResponse ?: emptyList()
-                    genres = genresResponse ?: emptyList()
-                    covers = coversResponse ?: emptyList()
-                    platforms = platformsResponse ?: emptyList()
-                    platformlogos = platformLogosResponse ?: emptyList()
-
-
-                    // Mettre à jour platformetlogo
-                platformetlogo = platforms.flatMap { platform ->
-                    platformlogos.filter { it.id == platform.platform_logo }
-                        .map { Platformetlogo(platform.id, platform.name, platform.platform_logo, it.url) }
+                    updateUI(gamesResponse, genresResponse, coversResponse, platformsResponse, platformLogosResponse)
                 }
-                    isloading = false
-            }
             } catch (e: Exception) {
+                e.printStackTrace()
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Erreur de chargement des données", Toast.LENGTH_SHORT).show()
-                    isloading = false
+                    Toast.makeText(context, "Erreur de chargement des données: ${e.message}", Toast.LENGTH_LONG).show()
                 }
+            }
+        }
+    }
+
+    private suspend fun fetchGames(): List<Game> {
+        val body = "fields id, cover, first_release_date, genres, name, platforms, summary, total_rating; limit 100;"
+        val requestBody = body.toRequestBody("text/plain".toMediaType())
+        return RetrofitClient.instance.getGames("Bearer $bearertoken", clientId = clientid, body = requestBody) ?: emptyList()
+    }
+
+    private suspend fun fetchGenres(): List<Genre> {
+        val body = "fields id, name; limit 500;"
+        val requestBody = body.toRequestBody("text/plain".toMediaType())
+        return RetrofitClient.instance.getGenres("Bearer $bearertoken", clientId = clientid, requestBody) ?: emptyList()
+    }
+
+    private suspend fun fetchCovers(): List<Cover> {
+        val body = "fields id, url; limit 500;"
+        val requestBody = body.toRequestBody("text/plain".toMediaType())
+        return RetrofitClient.instance.getCovers("Bearer $bearertoken", clientId = clientid, requestBody) ?: emptyList()
+    }
+
+    private suspend fun fetchPlatforms(): List<Platform> {
+        val body = "fields id, name, platform_logo; limit 500;"
+        val requestBody = body.toRequestBody("text/plain".toMediaType())
+        return RetrofitClient.instance.getPlatforms("Bearer $bearertoken", clientId = clientid, requestBody) ?: emptyList()
+    }
+
+    private suspend fun fetchPlatformLogos(): List<PlatformLogo> {
+        val body = "fields id, url; limit 500;"
+        val requestBody = body.toRequestBody("text/plain".toMediaType())
+        return RetrofitClient.instance.getPlatformLogos("Bearer $bearertoken", clientId = clientid, requestBody) ?: emptyList()
+    }
+
+    private fun updateUI(
+        gamesResponse: List<Game>,
+        genresResponse: List<Genre>,
+        coversResponse: List<Cover>,
+        platformsResponse: List<Platform>,
+        platformLogosResponse: List<PlatformLogo>
+    ) {
+        games.clear()
+        games.addAll(gamesResponse)
+
+        genres.clear()
+        genres.addAll(genresResponse)
+
+        covers.clear()
+        covers.addAll(coversResponse)
+
+        platforms.clear()
+        platforms.addAll(platformsResponse)
+
+        platformlogos.clear()
+        platformlogos.addAll(platformLogosResponse)
+
+        platformetlogo.clear()
+        platformetlogo.addAll(platforms.flatMap { platform ->
+            platformlogos.filter { it.id == platform.platform_logo }
+                .map { Platformetlogo(platform.id, platform.name, platform.platform_logo, it.url) }
+        })
+    }
+}
+
+
+/*
+object IGDB {
+
+    lateinit var covers: List<Cover>
+    lateinit var genres : List<Genre>
+    lateinit var games : List<Game>
+    lateinit var platforms : List<Platform>
+    var platformetlogo = mutableListOf<Platformetlogo>()
+    lateinit var platformlogos : List<PlatformLogo>
+
+    fun load(context: Context){
+        IGDBWrapper.setCredentials(clientid, bearertoken)
+        val apicalypse = APICalypse().fields("*")
+
+        try{
+            covers = IGDBWrapper.covers(apicalypse)
+        } catch(e: RequestException) {
+            Log.d(e.message,"cover")
+            print(e.message)
+        }
+        try{
+            games = IGDBWrapper.games(apicalypse)
+        } catch(e: RequestException) {
+            print("game")
+            print(e.message)
+        }
+        try{
+            genres = IGDBWrapper.genres(apicalypse)
+        } catch(e: RequestException) {
+            print("genre")
+            print(e.message)
+        }
+        try{
+            platforms = IGDBWrapper.platforms(apicalypse)
+        } catch(e: RequestException) {
+            print("platform")
+            print(e.message)
+        }
+        try{
+            platformlogos = IGDBWrapper.platformLogos(apicalypse)
+        } catch(e: RequestException) {
+            print("platform logo")
+            print(e.message)
+        }
+        for (platform in platforms){
+            for (platforml in platformlogos){
+                if (platform.id == platforml.id){
+                    platformetlogo.add(Platformetlogo(platform.id,platform.name,platform.id,platforml.url))             }
             }
         }
     }
 }
 */
+/*
 object IGDB {
 
     lateinit var covers: List<Cover>
@@ -115,7 +228,7 @@ object IGDB {
         }
     }
 }
-
+*/
 data class Cover(val id: Long, val url: String)
 data class Genre(val id: Long, val name: String)
 data class Game(val id: Long, val cover: Long, val first_release_date: Long, val genres: List<Long>, val name: String, val platforms: List<Long>, val summary: String, val total_rating: String)

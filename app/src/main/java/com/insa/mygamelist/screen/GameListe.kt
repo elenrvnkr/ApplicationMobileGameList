@@ -55,7 +55,7 @@ import com.insa.mygamelist.favoriteGames
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GameList(navController: NavController,context:Context) {
+fun GameList(navController: NavController) {
 
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var isSearchVisible by rememberSaveable { mutableStateOf(false) }
@@ -84,8 +84,8 @@ fun GameList(navController: NavController,context:Context) {
     }, modifier = Modifier.fillMaxSize()) { innerPadding ->
         val filteredGames = IGDB.games.filter { game ->
             game.name?.contains(searchQuery, ignoreCase = true) == true ||
-                    IGDB.genres?.any { it.id in game.genres && game.genres != null && it.name?.contains(searchQuery, ignoreCase = true) == true } == true ||
-                    IGDB.platforms?.any { it.id in game.platforms && game.genres != null && it.name?.contains(searchQuery, ignoreCase = true) == true } == true
+                    IGDB.genres?.any { it.id in game.genres && it.name?.contains(searchQuery, ignoreCase = true) == true } == true ||
+                    IGDB.platforms?.any { it.id in game.platforms && it.name?.contains(searchQuery, ignoreCase = true) == true } == true
         }
         if (filteredGames.isEmpty()) {
             NoMatchScreen()
@@ -123,7 +123,7 @@ fun GameList(navController: NavController,context:Context) {
                                     .weight(1f)
                             ) {
                                 Text(
-                                    text = filteredGames[index].name,
+                                    text = filteredGames[index].name ?: "Valeur par défaut",
                                     fontSize = 20.sp,
                                     fontWeight = FontWeight.W600,
                                     color = Color.Black,
