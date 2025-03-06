@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -51,7 +52,9 @@ fun GameInfo(navController: NavController, gamei: GameInfor) {
                 titleContentColor = Color.Black,
             ), title = {
                 if (jeu != null) {
-                    Text(text = jeu.name)
+                    Text(text = jeu.name,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis)
                 }
             },
                 navigationIcon = {
@@ -96,6 +99,7 @@ fun GameInfo(navController: NavController, gamei: GameInfor) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 if (jeu != null) {
+
                     Text(
                         text = jeu.name?: "Valeur par défaut",
                         modifier = Modifier.padding(10.dp),
@@ -110,8 +114,12 @@ fun GameInfo(navController: NavController, gamei: GameInfor) {
                             .size(250.dp),
                         contentDescription = null
                     )
-                    Text(text = IGDB.genres.filter { it.id in jeu.genres}
-                        .joinToString(separator = ", ") { it.name }?: "Valeur par défaut",
+                    Text(text = if (jeu.genres != null) {
+                        IGDB.genres.filter { it.id in jeu.genres }
+                            .joinToString(separator = ", ") { it.name }
+                    } else {
+                        "Genres : Non disponible"
+                    },
                         modifier = Modifier.padding(2.dp),
                         fontStyle = FontStyle.Italic,
                         fontSize = 15.sp

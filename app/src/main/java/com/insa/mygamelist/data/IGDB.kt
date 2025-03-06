@@ -1,7 +1,6 @@
 package com.insa.mygamelist.data
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -114,6 +113,8 @@ object IGDB {
             platformlogos.filter { it.id == platform.platform_logo }
                 .map { Platformetlogo(platform.id, platform.name, platform.platform_logo, it.url) }
         })
+
+
     }
 }
 
