@@ -117,19 +117,18 @@ fun GameInfo(navController: NavController, gamei: GameInfor) {
                         modifier = Modifier
                             .padding(10.dp)
                             .size(250.dp),
-                        contentDescription = "https:${IGDB.covers.find { it.game == jeu.id }?.url}",
+                        contentDescription = null,
                     )}else{
                         Image(
                             painter = painterResource(R.drawable.cover_placeholder_true),
                             modifier = Modifier
                                 .padding(10.dp)
                                 .size(250.dp),
-                            contentDescription = "https:${IGDB.covers.find { it.game == jeu.id }?.url}",
+                            contentDescription = null,
                         )
                     }
                     Text(text = if (jeu.genres != null) {
-                        IGDB.genres.filter { it.id in jeu.genres }
-                            .joinToString(separator = ", ") { it.name }
+                        "Genres : " + jeu.genres!!.joinToString(separator = ", ") { it["name"] ?: "Inconnu" }
                     } else {
                         "Genres : Non disponible"
                     },
@@ -138,13 +137,14 @@ fun GameInfo(navController: NavController, gamei: GameInfor) {
                         fontSize = 15.sp
                     )
                     LazyRow(modifier = Modifier.fillMaxWidth()) {
-                        items(if (jeu.platforms != null) {
-                            jeu.platforms.size
-                        } else {
-                            0
-                        }) { index ->
+                        items(jeu.platforms?.size ?: 0) { index ->
+                            val platform = jeu.platforms[index]
+                            val imageUrl = platform.platform_logo?.image_id?.let {
+                                "https://images.igdb.com/igdb/image/upload/t_logo_med/$it.png"
+                            }
+
                             AsyncImage(
-                                model = "https:${IGDB.platformetlogo.find { it.id == jeu.platforms[index] }?.url}",
+                                model = imageUrl,
                                 modifier = Modifier
                                     .padding(5.dp),
                                 contentDescription = null

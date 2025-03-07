@@ -16,12 +16,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 
 
 object IGDB {
-    var covers = mutableStateListOf<Cover>()
-    var genres = mutableStateListOf<Genre>()
     var games = mutableStateListOf<Game>()
-    var platforms = mutableStateListOf<Platform>()
-    var platformlogos = mutableStateListOf<PlatformLogo>()
-    var platformetlogo = mutableStateListOf<Platformetlogo>()
 
     var isLoading = mutableStateOf(false)
 
@@ -34,13 +29,10 @@ object IGDB {
             }
             try {
                 val gamesResponse = fetchGames()
-                val genresResponse = fetchGenres()
-                val coversResponse = fetchCovers()
-                val platformsResponse = fetchPlatforms()
-                val platformLogosResponse = fetchPlatformLogos()
+
 
                 withContext(Dispatchers.Main) {
-                    updateUI(gamesResponse, genresResponse, coversResponse, platformsResponse, platformLogosResponse)
+                    updateUI(gamesResponse)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -55,65 +47,18 @@ object IGDB {
     }
 
     private suspend fun fetchGames(): List<Game> {
-        val body = "fields id, cover.image_id, first_release_date, genres, name, platforms, summary, total_rating; limit 500; search \"sonic\";"
+        val body = "fields id, cover.image_id, first_release_date, genres.name, name, platforms.platform_logo.image_id, platforms.name, summary, total_rating; limit 500;"
         val requestBody = body.toRequestBody("text/plain".toMediaType())
         return RetrofitClient.instance.getGames("Bearer $bearertoken", clientId = clientid, body = requestBody) ?: emptyList()
 
     }
 
-    private suspend fun fetchGenres(): List<Genre> {
-        val body = "fields id, name; limit 500;"
-        val requestBody = body.toRequestBody("text/plain".toMediaType())
-        return RetrofitClient.instance.getGenres("Bearer $bearertoken", clientId = clientid, requestBody) ?: emptyList()
-    }
-
-    private suspend fun fetchCovers(): List<Cover> {
-        val body = "fields game, url, image_id; limit 500;"
-        val requestBody = body.toRequestBody("text/plain".toMediaType())
-        return RetrofitClient.instance.getCovers("Bearer $bearertoken", clientId = clientid, requestBody) ?: emptyList()
-    }
-
-    private suspend fun fetchPlatforms(): List<Platform> {
-        val body = "fields id, name, platform_logo;"
-        val requestBody = body.toRequestBody("text/plain".toMediaType())
-        return RetrofitClient.instance.getPlatforms("Bearer $bearertoken", clientId = clientid, requestBody) ?: emptyList()
-    }
-
-    private suspend fun fetchPlatformLogos(): List<PlatformLogo> {
-        val body = "fields id, url;"
-        val requestBody = body.toRequestBody("text/plain".toMediaType())
-        return RetrofitClient.instance.getPlatformLogos("Bearer $bearertoken", clientId = clientid, requestBody) ?: emptyList()
-    }
 
     private fun updateUI(
-        gamesResponse: List<Game>,
-        genresResponse: List<Genre>,
-        coversResponse: List<Cover>,
-        platformsResponse: List<Platform>,
-        platformLogosResponse: List<PlatformLogo>
+        gamesResponse: List<Game>
     ) {
         games.clear()
         games.addAll(gamesResponse)
-
-
-        genres.clear()
-        genres.addAll(genresResponse)
-
-        covers.clear()
-        covers.addAll(coversResponse)
-
-        platforms.clear()
-        platforms.addAll(platformsResponse)
-
-        platformlogos.clear()
-        platformlogos.addAll(platformLogosResponse)
-
-        platformetlogo.clear()
-        platformetlogo.addAll(platforms.flatMap { platform ->
-            platformlogos.filter { it.id == platform.platform_logo }
-                .map { Platformetlogo(platform.id, platform.name, platform.platform_logo, it.url) }
-        })
-
 
     }
 }
@@ -224,7 +169,14 @@ object IGDB {
 */
 data class Cover(val game: Long, val url: String, val image_id: String)
 data class Genre(val id: Long, val name: String)
-data class Game(val id: Long, val cover: Map<String, String>, val first_release_date: Long, val genres: List<Long>, val name: String, val platforms: List<Long>, val summary: String, val total_rating: String)
-data class Platform(val id: Long, val name: String, val platform_logo: Long)
-data class Platformetlogo(val id: Long, val name: String, val platform_logo: Long, val url:String)
-data class PlatformLogo(val id: Long, val url: String)
+data class Game(val id: Long, val cover: Map<String, String>, val first_release_date: Long, val genres: List<Map<String,String>>, val name: String, val platforms: List<Platform>, val summary: String, val total_rating: String)
+data class PlatformLogo(
+    val id: Int?,
+    val image_id: String?
+)
+
+data class Platform(
+    val id: Int?,
+    val name: String?,
+    val platform_logo: PlatformLogo?
+)

@@ -83,13 +83,13 @@ fun GameList(navController: NavController) {
             })
     }, modifier = Modifier.fillMaxSize()) { innerPadding ->
         val filteredGames = IGDB.games.filter { game ->
-            game.name?.contains(searchQuery, ignoreCase = true) == true ||
-                    (IGDB.genres ?: emptyList()).any { genre ->
-                        genre.id in (game.genres ?: emptyList()) && (genre.name ?: "").contains(searchQuery, ignoreCase = true)
+            (game.name?.contains(searchQuery, ignoreCase = true) == true) ||
+                    (game.genres ?: emptyList()).any { genre ->
+                        (genre["name"] ?: "").contains(searchQuery, ignoreCase = true)
                     } ||
-                    (IGDB.platforms ?: emptyList()).any { platform ->
-                        platform.id in (game.platforms ?: emptyList()) && (platform.name ?: "").contains(searchQuery, ignoreCase = true)
-                    }
+                    game.platforms?.any { platform ->
+                        platform.name?.contains(searchQuery, ignoreCase = true) == true
+                    } == true
         }
         if (filteredGames.isEmpty()) {
             NoMatchScreen()
@@ -120,14 +120,14 @@ fun GameList(navController: NavController) {
                                     modifier = Modifier
                                         .padding(1.dp)
                                         .clip(RoundedCornerShape(12.dp)),
-                                    contentDescription = "https:${IGDB.covers.find { it.game == filteredGames[index].id }?.url}",
+                                    contentDescription = null,
                                 )}else{
                                     Image(
                                         painter = painterResource(R.drawable.cover_placeholder_true),
                                         modifier = Modifier
                                             .padding(1.dp)
                                             .clip(RoundedCornerShape(12.dp)),
-                                        contentDescription = "https:${IGDB.covers.find { it.game == filteredGames[index].id }?.url}",
+                                        contentDescription = null,
                                     )
                                 }
                             }
@@ -147,8 +147,7 @@ fun GameList(navController: NavController) {
                                     modifier = Modifier.padding(5.dp)
                                 )
                                 Text(text = if (filteredGames[index].genres != null) {
-                                "Genres : " + IGDB.genres.filter { it.id in filteredGames[index].genres!! }
-                                    .joinToString(separator = ", ") { it.name }
+                                    "Genres : " + filteredGames[index].genres!!.joinToString(separator = ", ") { it["name"] ?: "Inconnu" }
                             } else {
                                 "Genres : Non disponible"
                             },
