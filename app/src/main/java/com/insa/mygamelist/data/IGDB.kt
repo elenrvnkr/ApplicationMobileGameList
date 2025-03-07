@@ -16,29 +16,41 @@ import okhttp3.RequestBody.Companion.toRequestBody
 
 
 object IGDB {
+
     var games = mutableStateListOf<Game>()
 
     var isLoading = mutableStateOf(false)
 
+    private lateinit var db: GameDatabase
+
+    fun initDatabase(context: Context) {
+        db = GameDatabase.getDatabase(context)
+    }
+
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     fun load(context: Context) {
-
         scope.launch {
             withContext(Dispatchers.Main) {
                 isLoading.value = true // Activer le chargement
             }
+
             try {
                 val gamesResponse = fetchGames()
-
+                saveToDatabase(gamesResponse) // Sauvegarde des données localement
+                updateUI(gamesResponse)
 
                 withContext(Dispatchers.Main) {
                     updateUI(gamesResponse)
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "Erreur de chargement des données: ${e.message}", Toast.LENGTH_LONG).show()
-                }
+                val cachedGames = loadFromDatabase() // Chargement des données en mode offline
+                if (cachedGames.isNotEmpty()) {
+                    updateUI(cachedGames)
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "Erreur: ${e.message}", Toast.LENGTH_LONG).show()
+                    }}
             }finally {
                 withContext(Dispatchers.Main) {
                     isLoading.value = false
@@ -47,12 +59,20 @@ object IGDB {
     }
 
     private suspend fun fetchGames(): List<Game> {
-        val body = "fields id, cover.image_id, first_release_date, genres.name, name, platforms.platform_logo.image_id, platforms.name, summary, total_rating; limit 500;"
+        val body = "fields id, cover.image_id, first_release_date, genres.name, name, platforms.platform_logo.image_id, platforms.name, summary, total_rating; limit 40;"
         val requestBody = body.toRequestBody("text/plain".toMediaType())
         return RetrofitClient.instance.getGames("Bearer $bearertoken", clientId = clientid, body = requestBody) ?: emptyList()
 
     }
 
+    private suspend fun saveToDatabase(games: List<Game>) {
+        val gameEntities = games.map { it.toGameEntity() }
+        db.gameDao().insertGames(gameEntities)
+    }
+
+    private suspend fun loadFromDatabase(): List<Game> {
+        return db.gameDao().getAllGames().map { it.toGame() }
+    }
 
     private fun updateUI(
         gamesResponse: List<Game>
@@ -61,8 +81,34 @@ object IGDB {
         games.addAll(gamesResponse)
 
     }
+
 }
 
+fun GameEntity.toGame(): Game {
+    return Game(
+        id = this.id,
+        name = this.name,
+        cover = mapOf("image_id" to (this.coverUrl ?: "")),
+        first_release_date = this.releaseDate ?: 0L,
+        genres = this.genres?.split(";")?.map { mapOf("name" to it) } ?: emptyList(),
+        platforms = this.platforms?.split(";")?.map { Platform(null, it, null) } ?: emptyList(),
+        summary = this.summary ?: "",
+        total_rating = this.rating ?: ""
+    )
+}
+
+fun Game.toGameEntity(): GameEntity {
+    return GameEntity(
+        id = id,
+        name = name ?: "", // Si name est null, utilise une chaîne vide
+        summary = summary ?: "", // Si summary est null, utilise une chaîne vide
+        rating = total_rating?.toString() ?: "0", // Si total_rating est null, utilise 0.0
+        coverUrl = cover?.get("image_id") ?: "", // Si cover ou "image_id" est null, utilise une chaîne vide
+        genres = genres?.joinToString(",") { it["name"] ?: "" } ?: "", // Si genres est null, utilise une chaîne vide
+        platforms = platforms?.joinToString(",") { it.name ?: "" } ?: "",
+        releaseDate = first_release_date // Si platforms est null, utilise une chaîne vide
+    )
+}
 
 /*
 object IGDB {

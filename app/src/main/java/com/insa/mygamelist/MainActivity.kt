@@ -15,22 +15,37 @@ import com.insa.mygamelist.screen.GameInfo
 import com.insa.mygamelist.screen.GameList
 import com.insa.mygamelist.ui.theme.MyGamesListTheme
 import kotlinx.serialization.Serializable
+import android.app.Application
+import androidx.activity.viewModels
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 
 @Serializable
 object GameListe
 @Serializable
 data class GameInfor(val id :Long)
 
-var favoriteGames = mutableStateListOf<Long>()
+
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
-
+    private lateinit var gererFavoris: GererFavoris
+    private val favoriteGames = mutableStateListOf<Long>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        IGDB.initDatabase(this)
         IGDB.load(this)
+        GererFavoris.init(this) // Initialisation de l'instance
+
+        lifecycleScope.launch {
+            GererFavoris.favoriteGames.collect { favorites ->
+                favoriteGames.clear()
+                favoriteGames.addAll(favorites)
+            }
+        }
 
         enableEdgeToEdge()
         setContent {
@@ -42,12 +57,12 @@ class MainActivity : ComponentActivity() {
                     NavHost(navController, startDestination = GameListe) {
                         composable<GameListe> {
                             GameList(
-                                navController) }
+                                navController, favoriteGames) }
                         composable<GameInfor> {
                             val game = it.toRoute<GameInfor>()
                             GameInfo(
                                 navController,
-                                gamei = game)}
+                                gamei = game, favoriteGames)}
                     }
                 }
             }

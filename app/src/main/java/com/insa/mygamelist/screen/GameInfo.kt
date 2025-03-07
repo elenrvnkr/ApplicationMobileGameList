@@ -2,6 +2,7 @@ package com.insa.mygamelist.screen
 
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,21 +39,21 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.insa.mygamelist.GameInfor
+import com.insa.mygamelist.GererFavoris
 import com.insa.mygamelist.R
 import com.insa.mygamelist.data.IGDB
-import com.insa.mygamelist.favoriteGames
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GameInfo(navController: NavController, gamei: GameInfor) {
+fun GameInfo(navController: NavController, gamei: GameInfor, favoriteGames: List<Long>) {
 
     val jeu = IGDB.games.find { it.id == gamei.id }
     val isFavorite = jeu?.let { favoriteGames.contains(it.id) }
     Scaffold(
         topBar = {
             TopAppBar(colors = topAppBarColors(
-                containerColor = Color(144, 122, 200),
-                titleContentColor = Color.Black,
+                containerColor = Color(0, 109, 119),
+                titleContentColor = Color(237, 246, 255)
             ), title = {
                 if (jeu != null) {
                     Text(text = jeu.name,
@@ -64,7 +65,8 @@ fun GameInfo(navController: NavController, gamei: GameInfor) {
                     IconButton(onClick = { navController.navigateUp() }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Retour"
+                            contentDescription = "Retour",
+                            tint = Color(237, 246, 255)
                         )
                     }
                 },
@@ -72,30 +74,27 @@ fun GameInfo(navController: NavController, gamei: GameInfor) {
                     IconButton(
                         onClick = {
                             if (jeu != null) {
-                                if (favoriteGames.contains(jeu.id)) {
-                                    favoriteGames.remove(jeu.id)
-                                } else {
-                                    favoriteGames.add(jeu.id)
-                                }
+                                GererFavoris.toggleFavorite(jeu.id)
                             }
                         }
                     ) {
                         Icon(
                             imageVector = if (isFavorite == true) Icons.Filled.Star else Icons.TwoTone.Star,
                             contentDescription = "Favori",
-                            tint = if (isFavorite == true) Color(255, 222, 33) else Color.Black
+                            tint = if (isFavorite == true) Color(237, 246, 255) else Color(237, 246, 255)
                         )
                     }
                 }
 
             )
         },
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().background(Color(237,246,255))
     ) { innerPadding ->
         Row(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
+                .background(Color(237,246,255))
         ) {
             Column(
                 modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -107,6 +106,7 @@ fun GameInfo(navController: NavController, gamei: GameInfor) {
                         text = jeu.name?: "Valeur par défaut",
                         modifier = Modifier.padding(10.dp),
                         fontSize = 25.sp,
+                        color = Color(0, 109, 119),
                         fontWeight = FontWeight.W900,
                         style = TextStyle(textDecoration = TextDecoration.Underline)
                     )
@@ -117,14 +117,14 @@ fun GameInfo(navController: NavController, gamei: GameInfor) {
                         modifier = Modifier
                             .padding(10.dp)
                             .size(250.dp),
-                        contentDescription = null,
+                        contentDescription = "No description available",
                     )}else{
                         Image(
                             painter = painterResource(R.drawable.cover_placeholder_true),
                             modifier = Modifier
                                 .padding(10.dp)
                                 .size(250.dp),
-                            contentDescription = null,
+                            contentDescription = "No image",
                         )
                     }
                     Text(text = if (jeu.genres != null) {
@@ -134,6 +134,7 @@ fun GameInfo(navController: NavController, gamei: GameInfor) {
                     },
                         modifier = Modifier.padding(2.dp),
                         fontStyle = FontStyle.Italic,
+                        color = Color(0, 109, 119),
                         fontSize = 15.sp
                     )
                     LazyRow(modifier = Modifier.fillMaxWidth()) {
@@ -147,13 +148,14 @@ fun GameInfo(navController: NavController, gamei: GameInfor) {
                                 model = imageUrl,
                                 modifier = Modifier
                                     .padding(5.dp),
-                                contentDescription = null
+                                contentDescription = jeu.platforms[index].name
                             )
                         }
                     }
                     Text(
                         text = jeu.summary?: "Résumé par défaut",
                         fontFamily = FontFamily.Serif,
+                        color = Color(0, 109, 119),
                         modifier = Modifier.padding(10.dp),
                         fontSize = 20.sp
                     )

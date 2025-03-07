@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.compose.compiler)
     kotlin(libs.plugins.kotlin.serialization.get().pluginId)
+    id("kotlin-kapt")
 }
 
 android {
@@ -76,6 +77,13 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.retrofit.v290)
     implementation(libs.igdb.api.jvm)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.androidx.room.common)
+    implementation(libs.gson.v285)
+    implementation(libs.material)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.runtime)
+    kapt("androidx.room:room-compiler:2.6.1")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -44,14 +45,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.insa.mygamelist.GameInfor
+import com.insa.mygamelist.GererFavoris
 import com.insa.mygamelist.R
 import com.insa.mygamelist.data.IGDB
-import com.insa.mygamelist.favoriteGames
+import kotlin.math.round
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GameList(navController: NavController) {
+fun GameList(navController: NavController, favoriteGames: List<Long>) {
     val isLoading by IGDB.isLoading
 
     if (isLoading) {
@@ -63,25 +65,35 @@ fun GameList(navController: NavController) {
     Scaffold(topBar = {
         TopAppBar(
             colors = topAppBarColors(
-                containerColor = Color(144, 122, 200),
-                titleContentColor = Color.Black
+                containerColor = Color(0, 109, 119),
+                titleContentColor = Color(237, 246, 255)
             ),
             title = {
                 if (isSearchVisible) {
                     SearchBar(searchQuery, { searchQuery = it })
                 } else {
-                    Text("Le Grenier du Joueur")
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(id = R.drawable.logoappli), // Remplace par mipmap.logoappli si nécessaire
+                            contentDescription = "Logo App",
+                            modifier = Modifier
+                                .size(40.dp) // Ajuste la taille selon ton besoin
+                                .padding(end = 8.dp)
+                        )
+                        Text("Le Grenier du Joueur")
+                    }
                 }
             },
             actions = {
                 IconButton(onClick = { isSearchVisible = !isSearchVisible }) {
                     Icon(
                         imageVector = Icons.Filled.Search,
-                        contentDescription = "Barre de recherche"
+                        contentDescription = "Barre de recherche",
+                        tint = Color(237, 246, 255)
                     )
                 }
             })
-    }, modifier = Modifier.fillMaxSize()) { innerPadding ->
+    }, modifier = Modifier.fillMaxSize().background(Color(237, 246, 255))) { innerPadding ->
         val filteredGames = IGDB.games.filter { game ->
             (game.name?.contains(searchQuery, ignoreCase = true) == true) ||
                     (game.genres ?: emptyList()).any { genre ->
@@ -94,7 +106,7 @@ fun GameList(navController: NavController) {
         if (filteredGames.isEmpty()) {
             NoMatchScreen()
         } else {
-            LazyColumn(modifier = Modifier.padding(innerPadding)) {
+            LazyColumn(modifier = Modifier.padding(innerPadding).background(Color(131, 197, 190))) {
                 items(filteredGames.size) { index ->
                     val isFavorite = favoriteGames.contains(filteredGames[index].id)
                     Box(
@@ -104,7 +116,7 @@ fun GameList(navController: NavController) {
                                 .fillMaxWidth()
                                 .padding(10.dp)
                                 .clip(RoundedCornerShape(16.dp))
-                                .background(Color.LightGray)
+                                .background(Color(237, 246, 255))
                                 .padding(5.dp)
                                 .clickable { navController.navigate(GameInfor(filteredGames[index].id)) },
                             verticalAlignment = Alignment.CenterVertically
@@ -120,14 +132,14 @@ fun GameList(navController: NavController) {
                                     modifier = Modifier
                                         .padding(1.dp)
                                         .clip(RoundedCornerShape(12.dp)),
-                                    contentDescription = null,
+                                    contentDescription = "Pas de descriptions disponibles",
                                 )}else{
                                     Image(
                                         painter = painterResource(R.drawable.cover_placeholder_true),
                                         modifier = Modifier
                                             .padding(1.dp)
                                             .clip(RoundedCornerShape(12.dp)),
-                                        contentDescription = null,
+                                        contentDescription = "No image",
                                     )
                                 }
                             }
@@ -139,8 +151,8 @@ fun GameList(navController: NavController) {
                                 Text(
                                     text = filteredGames[index].name ?: "Valeur par défaut",
                                     fontSize = 20.sp,
+                                    color = Color(0,109,119),
                                     fontWeight = FontWeight.W600,
-                                    color = Color.Black,
                                     style = TextStyle(textDecoration = TextDecoration.Underline),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
@@ -152,7 +164,7 @@ fun GameList(navController: NavController) {
                                 "Genres : Non disponible"
                             },
                                     maxLines = 2,
-                                    color = Color.Black,
+                                    color = Color(0, 109, 119),
                                     overflow = TextOverflow.Ellipsis,
                                     modifier = Modifier.padding(5.dp)
                                 )
@@ -161,17 +173,13 @@ fun GameList(navController: NavController) {
                             Column {
                                 IconButton(
                                     onClick = {
-                                        if (favoriteGames.contains(filteredGames[index].id)) {
-                                            favoriteGames.remove(filteredGames[index].id)
-                                        } else {
-                                            favoriteGames.add(filteredGames[index].id)
-                                        }
+                                        GererFavoris.toggleFavorite(filteredGames[index].id)
                                     },
                                 ) {
                                     Icon(
                                         imageVector = if (isFavorite) Icons.Filled.Star else Icons.TwoTone.Star,
                                         contentDescription = "Favori",
-                                        tint = if (isFavorite) Color(255, 222, 33) else Color.Black
+                                        tint = if (isFavorite) Color(0, 109, 119) else Color(131, 197, 190)
                                     )
                                 }
                             }

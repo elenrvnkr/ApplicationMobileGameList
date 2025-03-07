@@ -1,5 +1,6 @@
 package com.insa.mygamelist.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
@@ -13,14 +14,14 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun NoMatchScreen() {
     Box(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().background(Color(131, 197, 190)),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = "No match :(",
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
-            color = Color.Gray
+            color = Color(237, 246, 255)
         )
     }
 }
