@@ -55,32 +55,32 @@ object IGDB {
     }
 
     private suspend fun fetchGames(): List<Game> {
-        val body = "fields id, cover, first_release_date, genres, name, platforms, summary, total_rating; limit 500;"
+        val body = "fields id, cover.image_id, first_release_date, genres, name, platforms, summary, total_rating; limit 500; search \"sonic\";"
         val requestBody = body.toRequestBody("text/plain".toMediaType())
         return RetrofitClient.instance.getGames("Bearer $bearertoken", clientId = clientid, body = requestBody) ?: emptyList()
 
     }
 
     private suspend fun fetchGenres(): List<Genre> {
-        val body = "fields id, name; limit 500; sort rating desc;"
+        val body = "fields id, name; limit 500;"
         val requestBody = body.toRequestBody("text/plain".toMediaType())
         return RetrofitClient.instance.getGenres("Bearer $bearertoken", clientId = clientid, requestBody) ?: emptyList()
     }
 
     private suspend fun fetchCovers(): List<Cover> {
-        val body = "fields id, url; limit 500; sort rating desc;"
+        val body = "fields game, url, image_id; limit 500;"
         val requestBody = body.toRequestBody("text/plain".toMediaType())
         return RetrofitClient.instance.getCovers("Bearer $bearertoken", clientId = clientid, requestBody) ?: emptyList()
     }
 
     private suspend fun fetchPlatforms(): List<Platform> {
-        val body = "fields id, name, platform_logo; limit 500;"
+        val body = "fields id, name, platform_logo;"
         val requestBody = body.toRequestBody("text/plain".toMediaType())
         return RetrofitClient.instance.getPlatforms("Bearer $bearertoken", clientId = clientid, requestBody) ?: emptyList()
     }
 
     private suspend fun fetchPlatformLogos(): List<PlatformLogo> {
-        val body = "fields id, url; limit 500;"
+        val body = "fields id, url;"
         val requestBody = body.toRequestBody("text/plain".toMediaType())
         return RetrofitClient.instance.getPlatformLogos("Bearer $bearertoken", clientId = clientid, requestBody) ?: emptyList()
     }
@@ -222,9 +222,9 @@ object IGDB {
     }
 }
 */
-data class Cover(val id: Long, val url: String)
+data class Cover(val game: Long, val url: String, val image_id: String)
 data class Genre(val id: Long, val name: String)
-data class Game(val id: Long, val cover: Long, val first_release_date: Long, val genres: List<Long>, val name: String, val platforms: List<Long>, val summary: String, val total_rating: String)
+data class Game(val id: Long, val cover: Map<String, String>, val first_release_date: Long, val genres: List<Long>, val name: String, val platforms: List<Long>, val summary: String, val total_rating: String)
 data class Platform(val id: Long, val name: String, val platform_logo: Long)
 data class Platformetlogo(val id: Long, val name: String, val platform_logo: Long, val url:String)
 data class PlatformLogo(val id: Long, val url: String)

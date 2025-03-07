@@ -1,6 +1,7 @@
 package com.insa.mygamelist.screen
 
 import android.util.Log
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -33,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -42,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.insa.mygamelist.GameInfor
+import com.insa.mygamelist.R
 import com.insa.mygamelist.data.IGDB
 import com.insa.mygamelist.favoriteGames
 
@@ -110,13 +113,23 @@ fun GameList(navController: NavController) {
                                 modifier = Modifier.padding(2.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
+                                if(filteredGames[index].cover != null ){
+                                val cover = filteredGames[index].cover["image_id"]
                                 AsyncImage(
-                                    model = "https:${IGDB.covers.find { it.id == filteredGames[index].cover }?.url}",
+                                    model = "https://images.igdb.com/igdb/image/upload/t_cover_big/$cover.jpg",
                                     modifier = Modifier
                                         .padding(1.dp)
                                         .clip(RoundedCornerShape(12.dp)),
-                                    contentDescription = null,
-                                )
+                                    contentDescription = "https:${IGDB.covers.find { it.game == filteredGames[index].id }?.url}",
+                                )}else{
+                                    Image(
+                                        painter = painterResource(R.drawable.cover_placeholder_true),
+                                        modifier = Modifier
+                                            .padding(1.dp)
+                                            .clip(RoundedCornerShape(12.dp)),
+                                        contentDescription = "https:${IGDB.covers.find { it.game == filteredGames[index].id }?.url}",
+                                    )
+                                }
                             }
                             Column(
                                 modifier = Modifier

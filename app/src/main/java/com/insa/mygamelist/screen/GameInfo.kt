@@ -1,6 +1,7 @@
 package com.insa.mygamelist.screen
 
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
@@ -36,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import com.insa.mygamelist.GameInfor
+import com.insa.mygamelist.R
 import com.insa.mygamelist.data.IGDB
 import com.insa.mygamelist.favoriteGames
 
@@ -107,13 +110,23 @@ fun GameInfo(navController: NavController, gamei: GameInfor) {
                         fontWeight = FontWeight.W900,
                         style = TextStyle(textDecoration = TextDecoration.Underline)
                     )
+                    if(jeu.cover != null ){
+                        val cover = jeu.cover["image_id"]
                     AsyncImage(
-                        model = "https:${IGDB.covers.find { it.id == jeu.cover }?.url}",
+                        model = "https://images.igdb.com/igdb/image/upload/t_cover_big/$cover.jpg",
                         modifier = Modifier
                             .padding(10.dp)
                             .size(250.dp),
-                        contentDescription = null
-                    )
+                        contentDescription = "https:${IGDB.covers.find { it.game == jeu.id }?.url}",
+                    )}else{
+                        Image(
+                            painter = painterResource(R.drawable.cover_placeholder_true),
+                            modifier = Modifier
+                                .padding(10.dp)
+                                .size(250.dp),
+                            contentDescription = "https:${IGDB.covers.find { it.game == jeu.id }?.url}",
+                        )
+                    }
                     Text(text = if (jeu.genres != null) {
                         IGDB.genres.filter { it.id in jeu.genres }
                             .joinToString(separator = ", ") { it.name }
