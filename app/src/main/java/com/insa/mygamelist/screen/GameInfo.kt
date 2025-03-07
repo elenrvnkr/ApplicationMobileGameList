@@ -120,7 +120,7 @@ fun GameInfo(navController: NavController, gamei: GameInfor, favoriteGames: List
                         contentDescription = "No description available",
                     )}else{
                         Image(
-                            painter = painterResource(R.drawable.cover_placeholder_true),
+                            painter = painterResource(R.drawable.no_image),
                             modifier = Modifier
                                 .padding(10.dp)
                                 .size(250.dp),

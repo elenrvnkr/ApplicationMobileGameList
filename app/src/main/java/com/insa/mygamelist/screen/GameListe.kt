@@ -135,7 +135,7 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
                                     contentDescription = "Pas de descriptions disponibles",
                                 )}else{
                                     Image(
-                                        painter = painterResource(R.drawable.cover_placeholder_true),
+                                        painter = painterResource(R.drawable.no_image),
                                         modifier = Modifier
                                             .padding(1.dp)
                                             .clip(RoundedCornerShape(12.dp)),
