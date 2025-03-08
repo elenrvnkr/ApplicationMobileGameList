@@ -4,8 +4,6 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-
-
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -21,7 +19,12 @@ object IGDB {
 
     var isLoading = mutableStateOf(false)
 
+    var isLoading2= mutableStateOf(false)
+
     private lateinit var db: GameDatabase
+
+    private var offset = 50
+    private var limit = 50
 
     fun initDatabase(context: Context) {
         db = GameDatabase.getDatabase(context)
@@ -35,7 +38,7 @@ object IGDB {
             }
 
             try {
-                val gamesResponse = fetchGames()
+                val gamesResponse = fetchGames(0)
                 saveToDatabase(gamesResponse) // Sauvegarde des données localement
                 updateUI(gamesResponse)
 
@@ -58,8 +61,27 @@ object IGDB {
         }}
     }
 
-    private suspend fun fetchGames(): List<Game> {
-        val body = "fields id, cover.image_id, first_release_date, genres.name, name, platforms.platform_logo.image_id, platforms.name, summary, total_rating; limit 40;"
+    fun loadMoreGames() {
+        if (isLoading2.value) return
+
+        CoroutineScope(Dispatchers.IO).launch {
+            isLoading2.value = true
+            try {
+                val newGames = fetchGames(offset)
+                withContext(Dispatchers.Main) {
+                    games.addAll(newGames)
+                    offset += limit
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                isLoading2.value = false
+            }
+        }
+    }
+
+    private suspend fun fetchGames(offset: Int): List<Game> {
+        val body = "fields id, cover.image_id, first_release_date, genres.name, name, platforms.platform_logo.image_id, platforms.name, summary, total_rating; limit 50; offset $offset;"
         val requestBody = body.toRequestBody("text/plain".toMediaType())
         return RetrofitClient.instance.getGames("Bearer $bearertoken", clientId = clientid, body = requestBody) ?: emptyList()
 
@@ -90,9 +112,9 @@ fun GameEntity.toGame(): Game {
         name = this.name,
         cover = mapOf("image_id" to (this.coverUrl ?: "")),
         first_release_date = this.releaseDate ?: 0L,
-        genres = this.genres?.split(";")?.map { mapOf("name" to it) } ?: emptyList(),
+        genres = this.genres?.split(";")?.map { mapOf("name" to it) } ?: listOf(mapOf("name" to "Non disponible")),
         platforms = this.platforms?.split(";")?.map { Platform(null, it, null) } ?: emptyList(),
-        summary = this.summary ?: "",
+        summary = this.summary ?: "Résumé par défaut",
         total_rating = this.rating ?: ""
     )
 }
@@ -100,121 +122,16 @@ fun GameEntity.toGame(): Game {
 fun Game.toGameEntity(): GameEntity {
     return GameEntity(
         id = id,
-        name = name ?: "", // Si name est null, utilise une chaîne vide
-        summary = summary ?: "", // Si summary est null, utilise une chaîne vide
-        rating = total_rating?.toString() ?: "0", // Si total_rating est null, utilise 0.0
-        coverUrl = cover?.get("image_id") ?: "", // Si cover ou "image_id" est null, utilise une chaîne vide
-        genres = genres?.joinToString(",") { it["name"] ?: "" } ?: "", // Si genres est null, utilise une chaîne vide
+        name = name ?: "",
+        summary = summary ?: null,
+        rating = total_rating?.toString() ?: "0",
+        coverUrl = cover?.get("image_id") ?: null,
+        genres = genres?.joinToString(",") { it["name"] ?: "" } ?: null,
         platforms = platforms?.joinToString(",") { it.name ?: "" } ?: "",
-        releaseDate = first_release_date // Si platforms est null, utilise une chaîne vide
+        releaseDate = first_release_date
     )
 }
 
-/*
-object IGDB {
-
-    lateinit var covers: List<Cover>
-    lateinit var genres : List<Genre>
-    lateinit var games : List<Game>
-    lateinit var platforms : List<Platform>
-    var platformetlogo = mutableListOf<Platformetlogo>()
-    lateinit var platformlogos : List<PlatformLogo>
-
-    fun load(context: Context){
-        IGDBWrapper.setCredentials(clientid, bearertoken)
-        val apicalypse = APICalypse().fields("*")
-
-        try{
-            covers = IGDBWrapper.covers(apicalypse)
-        } catch(e: RequestException) {
-            Log.d(e.message,"cover")
-            print(e.message)
-        }
-        try{
-            games = IGDBWrapper.games(apicalypse)
-        } catch(e: RequestException) {
-            print("game")
-            print(e.message)
-        }
-        try{
-            genres = IGDBWrapper.genres(apicalypse)
-        } catch(e: RequestException) {
-            print("genre")
-            print(e.message)
-        }
-        try{
-            platforms = IGDBWrapper.platforms(apicalypse)
-        } catch(e: RequestException) {
-            print("platform")
-            print(e.message)
-        }
-        try{
-            platformlogos = IGDBWrapper.platformLogos(apicalypse)
-        } catch(e: RequestException) {
-            print("platform logo")
-            print(e.message)
-        }
-        for (platform in platforms){
-            for (platforml in platformlogos){
-                if (platform.id == platforml.id){
-                    platformetlogo.add(Platformetlogo(platform.id,platform.name,platform.id,platforml.url))             }
-            }
-        }
-    }
-}
-*/
-/*
-object IGDB {
-
-    lateinit var covers: List<Cover>
-    lateinit var genres : List<Genre>
-    lateinit var games : List<Game>
-    lateinit var platforms : List<Platform>
-    var platformetlogo = mutableListOf<Platformetlogo>()
-    lateinit var platformlogos : List<PlatformLogo>
-
-    fun load(context: Context) {
-        val coversFromJson: List<Cover> = Gson().fromJson(
-            context.resources.openRawResource(R.raw.covers).bufferedReader(),
-            object : TypeToken<List<Cover>>() {}.type
-
-        )
-        val genresFromJson: List<Genre> = Gson().fromJson(
-            context.resources.openRawResource(R.raw.genres).bufferedReader(),
-            object : TypeToken<List<Genre>>() {}.type
-
-        )
-        val gamesFromJson: List<Game> = Gson().fromJson(
-            context.resources.openRawResource(R.raw.games).bufferedReader(),
-            object : TypeToken<List<Game>>() {}.type
-
-        )
-        val platformsFromJson: List<Platform> = Gson().fromJson(
-            context.resources.openRawResource(R.raw.platforms).bufferedReader(),
-            object : TypeToken<List<Platform>>() {}.type
-        )
-        val platformsLogoFromJson: List<PlatformLogo> = Gson().fromJson(
-            context.resources.openRawResource(R.raw.platform_logos).bufferedReader(),
-            object : TypeToken<List<PlatformLogo>>() {}.type
-        )
-
-        covers = coversFromJson
-        genres = genresFromJson
-        games = gamesFromJson
-        platforms = platformsFromJson
-        platformlogos = platformsLogoFromJson
-
-        for (platform in platforms){
-            for (platforml in platformlogos){
-                if (platform.platform_logo == platforml.id){
-                    platformetlogo.add(Platformetlogo(platform.id,platform.name,platform.platform_logo,platforml.url))             }
-            }
-        }
-    }
-}
-*/
-data class Cover(val game: Long, val url: String, val image_id: String)
-data class Genre(val id: Long, val name: String)
 data class Game(val id: Long, val cover: Map<String, String>, val first_release_date: Long, val genres: List<Map<String,String>>, val name: String, val platforms: List<Platform>, val summary: String, val total_rating: String)
 data class PlatformLogo(
     val id: Int?,

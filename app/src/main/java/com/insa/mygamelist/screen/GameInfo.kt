@@ -111,6 +111,7 @@ fun GameInfo(navController: NavController, gamei: GameInfor, favoriteGames: List
                         style = TextStyle(textDecoration = TextDecoration.Underline)
                     )
                     if(jeu.cover != null ){
+                        if(jeu.cover["image_id"] != ""){
                         val cover = jeu.cover["image_id"]
                     AsyncImage(
                         model = "https://images.igdb.com/igdb/image/upload/t_cover_big/$cover.jpg",
@@ -119,6 +120,14 @@ fun GameInfo(navController: NavController, gamei: GameInfor, favoriteGames: List
                             .size(250.dp),
                         contentDescription = "No description available",
                     )}else{
+                            Image(
+                                painter = painterResource(R.drawable.no_image),
+                                modifier = Modifier
+                                    .padding(10.dp)
+                                    .size(250.dp),
+                                contentDescription = "No image",
+                            )
+                        }}else{
                         Image(
                             painter = painterResource(R.drawable.no_image),
                             modifier = Modifier
@@ -137,6 +146,7 @@ fun GameInfo(navController: NavController, gamei: GameInfor, favoriteGames: List
                         color = Color(0, 109, 119),
                         fontSize = 15.sp
                     )
+
                     LazyRow(modifier = Modifier.fillMaxWidth()) {
                         items(jeu.platforms?.size ?: 0) { index ->
                             val platform = jeu.platforms[index]
@@ -151,9 +161,10 @@ fun GameInfo(navController: NavController, gamei: GameInfor, favoriteGames: List
                                 contentDescription = jeu.platforms[index].name
                             )
                         }
-                    }
+                            }
+
                     Text(
-                        text = jeu.summary?: "Résumé par défaut",
+                        text = jeu.summary?: "Résumé non disponible",
                         fontFamily = FontFamily.Serif,
                         color = Color(0, 109, 119),
                         modifier = Modifier.padding(10.dp),

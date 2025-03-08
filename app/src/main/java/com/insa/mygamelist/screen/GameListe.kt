@@ -1,25 +1,21 @@
 package com.insa.mygamelist.screen
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.twotone.Star
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -28,27 +24,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil3.compose.AsyncImage
-import com.insa.mygamelist.GameInfor
-import com.insa.mygamelist.GererFavoris
 import com.insa.mygamelist.R
 import com.insa.mygamelist.data.IGDB
-import kotlin.math.round
+import com.insa.mygamelist.data.IGDB.isLoading2
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,10 +60,10 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
                 } else {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
-                            painter = painterResource(id = R.drawable.logoappli), // Remplace par mipmap.logoappli si nécessaire
+                            painter = painterResource(id = R.drawable.logoappli),
                             contentDescription = "Logo App",
                             modifier = Modifier
-                                .size(40.dp) // Ajuste la taille selon ton besoin
+                                .size(40.dp)
                                 .padding(end = 8.dp)
                         )
                         Text("Le Grenier du Joueur")
@@ -108,81 +94,23 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
         } else {
             LazyColumn(modifier = Modifier.padding(innerPadding).background(Color(131, 197, 190))) {
                 items(filteredGames.size) { index ->
-                    val isFavorite = favoriteGames.contains(filteredGames[index].id)
-                    Box(
-                    ) {
+
+                    GameCase(navController, favoriteGames, filteredGames, index)
+
+                }
+
+                item {
+                    if (isLoading2.value) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(10.dp)
-                                .clip(RoundedCornerShape(16.dp))
-                                .background(Color(237, 246, 255))
-                                .padding(5.dp)
-                                .clickable { navController.navigate(GameInfor(filteredGames[index].id)) },
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column(
-                                modifier = Modifier.padding(2.dp),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                if(filteredGames[index].cover != null ){
-                                val cover = filteredGames[index].cover["image_id"]
-                                AsyncImage(
-                                    model = "https://images.igdb.com/igdb/image/upload/t_cover_big/$cover.jpg",
-                                    modifier = Modifier
-                                        .padding(1.dp)
-                                        .clip(RoundedCornerShape(12.dp)),
-                                    contentDescription = "Pas de descriptions disponibles",
-                                )}else{
-                                    Image(
-                                        painter = painterResource(R.drawable.no_image),
-                                        modifier = Modifier
-                                            .padding(1.dp)
-                                            .clip(RoundedCornerShape(12.dp)),
-                                        contentDescription = "No image",
-                                    )
-                                }
-                            }
-                            Column(
-                                modifier = Modifier
-                                    .padding(2.dp)
-                                    .weight(1f)
-                            ) {
-                                Text(
-                                    text = filteredGames[index].name ?: "Valeur par défaut",
-                                    fontSize = 20.sp,
-                                    color = Color(0,109,119),
-                                    fontWeight = FontWeight.W600,
-                                    style = TextStyle(textDecoration = TextDecoration.Underline),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.padding(5.dp)
-                                )
-                                Text(text = if (filteredGames[index].genres != null) {
-                                    "Genres : " + filteredGames[index].genres!!.joinToString(separator = ", ") { it["name"] ?: "Inconnu" }
-                            } else {
-                                "Genres : Non disponible"
-                            },
-                                    maxLines = 2,
-                                    color = Color(0, 109, 119),
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.padding(5.dp)
-                                )
-
-                            }
-                            Column {
-                                IconButton(
-                                    onClick = {
-                                        GererFavoris.toggleFavorite(filteredGames[index].id)
-                                    },
-                                ) {
-                                    Icon(
-                                        imageVector = if (isFavorite) Icons.Filled.Star else Icons.TwoTone.Star,
-                                        contentDescription = "Favori",
-                                        tint = if (isFavorite) Color(0, 109, 119) else Color(131, 197, 190)
-                                    )
-                                }
-                            }
+                                CircularProgressIndicator()
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Text(text = "Chargement en cours...", color = Color(237, 246, 255), style = MaterialTheme.typography.bodyLarge)
+                        }
+                    } else {
+                        LaunchedEffect(Unit) {
+                            IGDB.loadMoreGames()
                         }
                     }
                 }
@@ -190,4 +118,6 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
         }
     }
 }}
+
+
 

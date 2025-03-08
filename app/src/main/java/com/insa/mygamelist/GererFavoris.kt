@@ -1,25 +1,19 @@
 package com.insa.mygamelist
 
-import android.preference.PreferenceManager
-import androidx.compose.runtime.mutableStateListOf
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import android.annotation.SuppressLint
 import android.content.Context
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
-import androidx.datastore.preferences.core.*
-import androidx.datastore.preferences.preferencesDataStore
 
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
 
 private val Context.dataStore by preferencesDataStore(name = "favorites_prefs")
 
 class GererFavoris(private val context: Context) {
     companion object {
+        @SuppressLint("StaticFieldLeak")
         private lateinit var instance: GererFavoris
         private val FAVORITES_KEY = stringSetPreferencesKey("favorite_games")
 

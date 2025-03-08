@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.mutableStateListOf
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,9 +14,6 @@ import com.insa.mygamelist.screen.GameInfo
 import com.insa.mygamelist.screen.GameList
 import com.insa.mygamelist.ui.theme.MyGamesListTheme
 import kotlinx.serialization.Serializable
-import android.app.Application
-import androidx.activity.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 
@@ -29,16 +25,15 @@ data class GameInfor(val id :Long)
 
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 class MainActivity : ComponentActivity() {
-    private lateinit var gererFavoris: GererFavoris
+
     private val favoriteGames = mutableStateListOf<Long>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         IGDB.initDatabase(this)
         IGDB.load(this)
-        GererFavoris.init(this) // Initialisation de l'instance
+        GererFavoris.init(this)
 
         lifecycleScope.launch {
             GererFavoris.favoriteGames.collect { favorites ->

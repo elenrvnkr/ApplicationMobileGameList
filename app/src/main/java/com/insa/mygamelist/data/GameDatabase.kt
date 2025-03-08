@@ -8,7 +8,7 @@ import android.content.Context
 import android.util.Log
 
 @Database(entities = [GameEntity::class], version = 1)
-@TypeConverters(Converters::class)
+@TypeConverters
 abstract class GameDatabase : RoomDatabase() {
     abstract fun gameDao(): GameDao
 
@@ -23,7 +23,7 @@ abstract class GameDatabase : RoomDatabase() {
                     context.applicationContext,
                     GameDatabase::class.java,
                     "game_database"
-                ).fallbackToDestructiveMigration() // Ajoute ceci pour éviter les crashes de migration
+                ).fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance

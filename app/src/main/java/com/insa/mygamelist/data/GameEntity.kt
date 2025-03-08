@@ -7,10 +7,10 @@ import androidx.room.PrimaryKey
 data class GameEntity(
     @PrimaryKey val id: Long,
     val name: String,
-    val coverUrl: String?, // Stocke uniquement l'URL de l'image
+    val coverUrl: String?,
     val releaseDate: Long?,
-    val genres: String?, // Stocke sous forme de String (ex: "Action,RPG")
-    val platforms: String?, // Stocke sous forme de String (ex: "PC,PS5,Xbox")
+    val genres: String?,
+    val platforms: String?,
     val summary: String?,
     val rating: String?
 )
