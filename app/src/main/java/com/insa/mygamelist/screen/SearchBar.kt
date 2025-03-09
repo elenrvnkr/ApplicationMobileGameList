@@ -54,7 +54,8 @@ fun SearchBar(searchQuery: String, onSearchQueryChanged: (String) -> Unit) {
                 IconButton(onClick = { onSearchQueryChanged("") }) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Effacer la recherche"
+                        contentDescription = "Effacer la recherche",
+                        tint = Color(0, 109, 119)
                     )
                 }
             }

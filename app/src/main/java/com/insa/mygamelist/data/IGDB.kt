@@ -25,8 +25,8 @@ object IGDB {
 
     private lateinit var db: GameDatabase
 
-    private var offset = 100
-    private const val limit = 100
+    private var offset = 500
+    private const val limit = 500
 
     fun initDatabase(context: Context) {
         db = GameDatabase.getDatabase(context)
@@ -86,7 +86,7 @@ object IGDB {
     private suspend fun fetchGames(offset: Int): List<Game> {
         val token = TokenManager.getToken()
         Log.d("token",token)
-        val body = "fields id, cover.image_id, first_release_date, genres.name, name, platforms.platform_logo.image_id, platforms.name, summary, total_rating; limit 100; offset $offset;"
+        val body = "fields id, cover.image_id, first_release_date, genres.name, name, platforms.platform_logo.image_id, platforms.name, summary, total_rating; limit 500; offset $offset;"
         val requestBody = body.toRequestBody("text/plain".toMediaType())
         return RetrofitClient.instance.getGames("Bearer $token", clientId = clientid, body = requestBody) ?: emptyList()
 
