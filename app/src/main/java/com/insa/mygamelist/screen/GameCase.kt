@@ -60,7 +60,7 @@ fun GameCase(navController: NavController, favoriteGames: List<Long>, filteredGa
                             modifier = Modifier
                                 .padding(1.dp)
                                 .clip(RoundedCornerShape(12.dp)),
-                            contentDescription = "Pas de descriptions disponibles",
+                            contentDescription = "Image illustrative du jeu",
                         )
                     }else{
                         Image(

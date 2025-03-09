@@ -118,7 +118,7 @@ fun GameInfo(navController: NavController, gamei: GameInfor, favoriteGames: List
                         modifier = Modifier
                             .padding(10.dp)
                             .size(250.dp),
-                        contentDescription = "No description available",
+                        contentDescription = "Image illustrative du jeu",
                     )}else{
                             Image(
                                 painter = painterResource(R.drawable.no_image),
@@ -158,7 +158,7 @@ fun GameInfo(navController: NavController, gamei: GameInfor, favoriteGames: List
                                 model = imageUrl,
                                 modifier = Modifier
                                     .padding(5.dp),
-                                contentDescription = jeu.platforms[index].name
+                                contentDescription = "Logo de :" + jeu.platforms[index].name
                             )
                         }
                             }

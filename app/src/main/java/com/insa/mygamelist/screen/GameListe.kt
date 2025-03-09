@@ -61,7 +61,7 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
                             painter = painterResource(id = R.drawable.logoappli),
-                            contentDescription = "Logo App",
+                            contentDescription = "Logo de l'application",
                             modifier = Modifier
                                 .size(40.dp)
                                 .padding(end = 8.dp)
