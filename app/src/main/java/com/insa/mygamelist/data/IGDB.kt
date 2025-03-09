@@ -1,6 +1,8 @@
 package com.insa.mygamelist.data
 
+
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +40,7 @@ object IGDB {
             }
 
             try {
+                TokenManager.init(context)
                 val gamesResponse = fetchGames(0)
                 saveToDatabase(gamesResponse) // Sauvegarde des données localement
                 updateUI(gamesResponse)
@@ -58,7 +61,7 @@ object IGDB {
                 withContext(Dispatchers.Main) {
                     isLoading.value = false
                 }
-        }}
+            }}
     }
 
     fun loadMoreGames() {
@@ -81,9 +84,11 @@ object IGDB {
     }
 
     private suspend fun fetchGames(offset: Int): List<Game> {
+        val token = TokenManager.getToken()
+        Log.d("token",token)
         val body = "fields id, cover.image_id, first_release_date, genres.name, name, platforms.platform_logo.image_id, platforms.name, summary, total_rating; limit 50; offset $offset;"
         val requestBody = body.toRequestBody("text/plain".toMediaType())
-        return RetrofitClient.instance.getGames("Bearer $bearertoken", clientId = clientid, body = requestBody) ?: emptyList()
+        return RetrofitClient.instance.getGames("Bearer $token", clientId = clientid, body = requestBody) ?: emptyList()
 
     }
 

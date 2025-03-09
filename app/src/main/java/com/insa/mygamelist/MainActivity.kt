@@ -1,9 +1,11 @@
 package com.insa.mygamelist
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateListOf
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,6 +18,8 @@ import com.insa.mygamelist.ui.theme.MyGamesListTheme
 import kotlinx.serialization.Serializable
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import java.util.Date
+
 
 @Serializable
 object GameListe
@@ -32,8 +36,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         IGDB.initDatabase(this)
-        IGDB.load(this)
+        IGDB.load(this) // Charge le token
         GererFavoris.init(this)
+        Log.d("date", Date().time.toString())
+        Log.d("system milis",((System.currentTimeMillis() / 1000).toString()))
 
         lifecycleScope.launch {
             GererFavoris.favoriteGames.collect { favorites ->
