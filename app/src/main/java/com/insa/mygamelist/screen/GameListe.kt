@@ -1,5 +1,6 @@
 package com.insa.mygamelist.screen
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
@@ -55,9 +56,7 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
                 titleContentColor = Color(237, 246, 255)
             ),
             title = {
-                if (isSearchVisible) {
-                    SearchBar(searchQuery, { searchQuery = it })
-                } else {
+                AnimatedVisibility(visible = !isSearchVisible) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Image(
                             painter = painterResource(id = R.drawable.logoappli),
@@ -68,6 +67,10 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
                         )
                         Text("Le Grenier du Joueur")
                     }
+                }
+
+                AnimatedVisibility(visible = isSearchVisible) {
+                    SearchBar(searchQuery, { searchQuery = it })
                 }
             },
             actions = {
@@ -104,8 +107,8 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                                CircularProgressIndicator()
-                                Spacer(modifier = Modifier.width(16.dp))
+                            CircularProgressIndicator(color = Color(237, 246, 255))
+                            Spacer(modifier = Modifier.width(16.dp))
                                 Text(text = "Chargement en cours...", color = Color(237, 246, 255), style = MaterialTheme.typography.bodyLarge)
                         }
                     } else {

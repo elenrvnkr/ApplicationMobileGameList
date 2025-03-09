@@ -22,7 +22,7 @@ fun LoadingScreen() {
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            CircularProgressIndicator()
+            CircularProgressIndicator(color = Color(237, 246, 255))
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = "Chargement en cours...", color = Color(237, 246, 255), style = MaterialTheme.typography.bodyLarge)
         }
