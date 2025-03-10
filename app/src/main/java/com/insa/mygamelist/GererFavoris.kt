@@ -4,9 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Context
 import androidx.datastore.preferences.core.*
 import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.launch
 
 
 private val Context.dataStore by preferencesDataStore(name = "favorites_prefs")
@@ -26,8 +27,8 @@ class GererFavoris(private val context: Context) {
                 preferences[FAVORITES_KEY]?.map { it.toLong() }?.toSet() ?: emptySet()
             }
 
-        fun toggleFavorite(gameId: Long) {
-            runBlocking {
+        fun toggleFavorite(gameId: Long, coroutineScope: CoroutineScope) {
+            coroutineScope.launch {
                 instance.context.dataStore.edit { preferences ->
                     val currentFavorites = preferences[FAVORITES_KEY]?.toMutableSet() ?: mutableSetOf()
                     if (currentFavorites.contains(gameId.toString())) {
@@ -41,8 +42,6 @@ class GererFavoris(private val context: Context) {
         }
     }
 }
-
-
 /*var favoriteGames = mutableStateListOf<Long>()
 
 fun toggleFavorite(gameId: Long) {

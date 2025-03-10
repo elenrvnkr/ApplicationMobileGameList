@@ -1,5 +1,6 @@
 package com.insa.mygamelist.screen
 
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.twotone.Star
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -48,6 +51,7 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
     } else {
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var isSearchVisible by rememberSaveable { mutableStateOf(false) }
+        var showOnlyFavorites by rememberSaveable { mutableStateOf(false) }
 
     Scaffold(topBar = {
         TopAppBar(
@@ -77,8 +81,15 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
                 IconButton(onClick = { isSearchVisible = !isSearchVisible }) {
                     Icon(
                         imageVector = Icons.Filled.Search,
-                        contentDescription = "Barre de recherche",
+                        contentDescription = if(isSearchVisible){ "Désactiver la barre de recherche" }else{ "Activer la barre de recherche" },
                         tint = Color(237, 246, 255)
+                    )
+                }
+                IconButton(onClick = {showOnlyFavorites = !showOnlyFavorites}) {
+                    Icon(
+                        imageVector = if(showOnlyFavorites){ Icons.Filled.Star }else{ Icons.TwoTone.Star },
+            contentDescription = if(showOnlyFavorites){ "Voir tout les jeux" }else{ "Filtrer les favoris" },
+                        tint = if (showOnlyFavorites) Color(237, 246, 255) else Color(237, 246, 255)
                     )
                 }
             })
@@ -91,6 +102,12 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
                     game.platforms?.any { platform ->
                         platform.name?.contains(searchQuery, ignoreCase = true) == true
                     } == true
+        }.filter{ game -> if(showOnlyFavorites ){
+            favoriteGames?.contains(game.id) == true
+
+        }else{
+            true
+        }
         }
         if (filteredGames.isEmpty()) {
             NoMatchScreen()

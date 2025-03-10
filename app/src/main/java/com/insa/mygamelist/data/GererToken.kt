@@ -40,7 +40,7 @@ object TokenManager {
 
         val request = Request.Builder()
             .url(url)
-            .post("".toRequestBody()) // Requête POST sans body
+            .post("".toRequestBody())
             .build()
 
         val response = withContext(Dispatchers.IO) {

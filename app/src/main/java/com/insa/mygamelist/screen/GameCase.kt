@@ -33,6 +33,8 @@ import com.insa.mygamelist.GameInfor
 import com.insa.mygamelist.GererFavoris
 import com.insa.mygamelist.R
 import com.insa.mygamelist.data.Game
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 @Composable
 fun GameCase(navController: NavController, favoriteGames: List<Long>, filteredGames: List<Game>, index: Int) {
@@ -110,12 +112,15 @@ fun GameCase(navController: NavController, favoriteGames: List<Long>, filteredGa
             Column {
                 IconButton(
                     onClick = {
-                        GererFavoris.toggleFavorite(filteredGames[index].id)
+                        GererFavoris.toggleFavorite(
+                            filteredGames[index].id,
+                            coroutineScope = CoroutineScope(Dispatchers.IO)
+                        )
                     },
                 ) {
                     Icon(
                         imageVector = if (isFavorite) Icons.Filled.Star else Icons.TwoTone.Star,
-                        contentDescription = "Favori",
+                        contentDescription = if (isFavorite) "Enlever des Favoris" else "Mettre en favori",
                         tint = if (isFavorite) Color(0, 109, 119) else Color(131, 197, 190)
                     )
                 }

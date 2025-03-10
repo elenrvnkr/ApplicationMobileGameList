@@ -36,13 +36,13 @@ object IGDB {
     fun load(context: Context) {
         scope.launch {
             withContext(Dispatchers.Main) {
-                isLoading.value = true // Activer le chargement
+                isLoading.value = true
             }
 
             try {
                 TokenManager.init(context)
                 val gamesResponse = fetchGames(0)
-                saveToDatabase(gamesResponse) // Sauvegarde des données localement
+                saveToDatabase(gamesResponse)
                 updateUI(gamesResponse)
 
                 withContext(Dispatchers.Main) {
@@ -50,7 +50,7 @@ object IGDB {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                val cachedGames = loadFromDatabase() // Chargement des données en mode offline
+                val cachedGames = loadFromDatabase()
                 if (cachedGames.isNotEmpty()) {
                     updateUI(cachedGames)
                 } else {

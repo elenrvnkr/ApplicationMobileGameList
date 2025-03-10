@@ -42,6 +42,8 @@ import com.insa.mygamelist.GameInfor
 import com.insa.mygamelist.GererFavoris
 import com.insa.mygamelist.R
 import com.insa.mygamelist.data.IGDB
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -74,13 +76,13 @@ fun GameInfo(navController: NavController, gamei: GameInfor, favoriteGames: List
                     IconButton(
                         onClick = {
                             if (jeu != null) {
-                                GererFavoris.toggleFavorite(jeu.id)
+                                GererFavoris.toggleFavorite(jeu.id, CoroutineScope(context = Dispatchers.IO))
                             }
                         }
                     ) {
                         Icon(
                             imageVector = if (isFavorite == true) Icons.Filled.Star else Icons.TwoTone.Star,
-                            contentDescription = "Favori",
+                            contentDescription = if (isFavorite == true) "Enlever des favoris" else "Mettre en favori",
                             tint = if (isFavorite == true) Color(237, 246, 255) else Color(237, 246, 255)
                         )
                     }
