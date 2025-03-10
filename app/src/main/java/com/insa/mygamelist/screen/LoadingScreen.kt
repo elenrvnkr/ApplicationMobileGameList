@@ -18,7 +18,9 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun LoadingScreen() {
     Box(
-        modifier = Modifier.fillMaxSize().background(Color(131, 197, 190)),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(131, 197, 190)),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {

@@ -6,12 +6,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.hoverable
-
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -67,7 +64,7 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
         val listState = rememberLazyListState()
         val coroutineScope = rememberCoroutineScope()
         val showScrollToTopButton by remember {
-            derivedStateOf {listState.firstVisibleItemIndex > 5 }
+            derivedStateOf { listState.firstVisibleItemIndex > 5 }
 
         }
 
@@ -129,20 +126,26 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
                 })
         },
             floatingActionButton = {
-                AnimatedVisibility(visible = showScrollToTopButton,
+                AnimatedVisibility(
+                    visible = showScrollToTopButton,
                     enter = fadeIn(),
-                    exit = fadeOut()) {
-                    FloatingActionButton(onClick = { coroutineScope.launch { listState.scrollToItem(0) } },
+                    exit = fadeOut()
+                ) {
+                    FloatingActionButton(
+                        onClick = { coroutineScope.launch { listState.scrollToItem(0) } },
                         containerColor = Color(0, 109, 119),
                         contentColor = Color(237, 246, 255),
                         modifier = Modifier
                             .size(50.dp)
 
                     ) {
-                    Icon(Icons.Filled.KeyboardArrowUp,
-                        contentDescription = "Remonter en haut") }
-            }}
-            , modifier = Modifier
+                        Icon(
+                            Icons.Filled.KeyboardArrowUp,
+                            contentDescription = "Remonter en haut"
+                        )
+                    }
+                }
+            }, modifier = Modifier
                 .fillMaxSize()
                 .background(Color(237, 246, 255))) { innerPadding ->
             val filteredGames = IGDB.games.filter { game ->
@@ -178,25 +181,25 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
 
 
 
-    item {
-        if (isLoading2.value) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                CircularProgressIndicator(color = Color(237, 246, 255))
-                Spacer(modifier = Modifier.width(16.dp))
-                Text(
-                    text = "Chargement en cours...",
-                    color = Color(237, 246, 255),
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
-        } else {
-            LaunchedEffect(Unit) {
-                IGDB.loadMoreGames()
-            }
-        }
-    }
+                    item {
+                        if (isLoading2.value) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                CircularProgressIndicator(color = Color(237, 246, 255))
+                                Spacer(modifier = Modifier.width(16.dp))
+                                Text(
+                                    text = "Chargement en cours...",
+                                    color = Color(237, 246, 255),
+                                    style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                        } else {
+                            LaunchedEffect(Unit) {
+                                IGDB.loadMoreGames()
+                            }
+                        }
+                    }
 
 
                 }

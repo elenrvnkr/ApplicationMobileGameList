@@ -21,12 +21,12 @@ object IGDB {
 
     var isLoading = mutableStateOf(false)
 
-    var isLoading2 = mutableStateOf(false)
+    var isLoading2= mutableStateOf(false)
 
     private lateinit var db: GameDatabase
 
-    private var offset = 100
-    private const val limit = 100
+    private var offset = 500
+    private const val limit = 500
 
     fun initDatabase(context: Context) {
         db = GameDatabase.getDatabase(context)
@@ -56,14 +56,12 @@ object IGDB {
                 } else {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "Erreur: ${e.message}", Toast.LENGTH_LONG).show()
-                    }
-                }
-            } finally {
+                    }}
+            }finally {
                 withContext(Dispatchers.Main) {
                     isLoading.value = false
                 }
-            }
-        }
+            }}
     }
 
     fun loadMoreGames() {
@@ -73,7 +71,6 @@ object IGDB {
             isLoading2.value = true
             try {
                 val newGames = fetchGames(offset)
-                saveToDatabase(newGames)
                 withContext(Dispatchers.Main) {
                     games.addAll(newGames)
                     offset += limit
@@ -88,15 +85,10 @@ object IGDB {
 
     private suspend fun fetchGames(offset: Int): List<Game> {
         val token = TokenManager.getToken()
-        Log.d("token", token)
-        val body =
-            "fields id, cover.image_id, first_release_date, genres.name, name, platforms.platform_logo.image_id, platforms.name, summary, total_rating; limit 100; offset $offset;"
+        Log.d("token",token)
+        val body = "fields id, cover.image_id, first_release_date, genres.name, name, platforms.platform_logo.image_id, platforms.name, summary, total_rating; limit 500; offset $offset;"
         val requestBody = body.toRequestBody("text/plain".toMediaType())
-        return RetrofitClient.instance.getGames(
-            "Bearer $token",
-            clientId = clientid,
-            body = requestBody
-        ) ?: emptyList()
+        return RetrofitClient.instance.getGames("Bearer $token", clientId = clientid, body = requestBody) ?: emptyList()
 
     }
 
@@ -125,8 +117,7 @@ fun GameEntity.toGame(): Game {
         name = this.name,
         cover = mapOf("image_id" to (this.coverUrl ?: "")),
         first_release_date = this.releaseDate ?: 0L,
-        genres = this.genres?.split(";")?.map { mapOf("name" to it) }
-            ?: listOf(mapOf("name" to "Non disponible")),
+        genres = this.genres?.split(";")?.map { mapOf("name" to it) } ?: listOf(mapOf("name" to "Non disponible")),
         platforms = this.platforms?.split(";")?.map { Platform(null, it, null) } ?: emptyList(),
         summary = this.summary ?: "Résumé par défaut",
         total_rating = this.rating ?: ""
@@ -146,17 +137,7 @@ fun Game.toGameEntity(): GameEntity {
     )
 }
 
-data class Game(
-    val id: Long,
-    val cover: Map<String, String>,
-    val first_release_date: Long,
-    val genres: List<Map<String, String>>,
-    val name: String,
-    val platforms: List<Platform>,
-    val summary: String,
-    val total_rating: String
-)
-
+data class Game(val id: Long, val cover: Map<String, String>, val first_release_date: Long, val genres: List<Map<String,String>>, val name: String, val platforms: List<Platform>, val summary: String, val total_rating: String)
 data class PlatformLogo(
     val id: Int?,
     val image_id: String?

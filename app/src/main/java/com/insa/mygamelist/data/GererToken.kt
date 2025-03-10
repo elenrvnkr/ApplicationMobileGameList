@@ -1,4 +1,3 @@
-
 package com.insa.mygamelist.data
 
 import android.content.Context
@@ -36,7 +35,8 @@ object TokenManager {
     }
 
     private suspend fun fetchNewToken(): String {
-        val url = "$TOKEN_URL?client_id=$clientid&client_secret=$clientsecret&grant_type=client_credentials"
+        val url =
+            "$TOKEN_URL?client_id=$clientid&client_secret=$clientsecret&grant_type=client_credentials"
 
         val request = Request.Builder()
             .url(url)
@@ -54,7 +54,7 @@ object TokenManager {
         val newToken = json.getString("access_token")
         val expiresIn = json.getLong("expires_in") // Durée de validité (en secondes)
 
-        val expirationTime = ( Date().time / 1000 )+ expiresIn
+        val expirationTime = (Date().time / 1000) + expiresIn
 
         withContext(Dispatchers.IO) {
             sharedPreferences.edit().apply {

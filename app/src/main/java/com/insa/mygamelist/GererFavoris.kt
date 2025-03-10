@@ -2,7 +2,8 @@ package com.insa.mygamelist
 
 import android.annotation.SuppressLint
 import android.content.Context
-import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -30,7 +31,8 @@ class GererFavoris(private val context: Context) {
         fun toggleFavorite(gameId: Long, coroutineScope: CoroutineScope) {
             coroutineScope.launch {
                 instance.context.dataStore.edit { preferences ->
-                    val currentFavorites = preferences[FAVORITES_KEY]?.toMutableSet() ?: mutableSetOf()
+                    val currentFavorites =
+                        preferences[FAVORITES_KEY]?.toMutableSet() ?: mutableSetOf()
                     if (currentFavorites.contains(gameId.toString())) {
                         currentFavorites.remove(gameId.toString())
                     } else {

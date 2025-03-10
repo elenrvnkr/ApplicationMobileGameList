@@ -14,7 +14,9 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun NoMatchScreen() {
     Box(
-        modifier = Modifier.fillMaxSize().background(Color(131, 197, 190)),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(131, 197, 190)),
         contentAlignment = Alignment.Center
     ) {
         Text(

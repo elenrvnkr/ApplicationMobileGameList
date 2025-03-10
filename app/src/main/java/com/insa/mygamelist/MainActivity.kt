@@ -26,8 +26,6 @@ object GameListe
 data class GameInfor(val id :Long)
 
 
-
-
 class MainActivity : ComponentActivity() {
 
     private val favoriteGames = mutableStateListOf<Long>()
@@ -35,7 +33,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         IGDB.initDatabase(this)
-        IGDB.load(this) // Charge le token
+        IGDB.load(this)
         GererFavoris.init(this)
         Log.d("date", Date().time.toString())
         Log.d("system milis",((System.currentTimeMillis() / 1000).toString()))
