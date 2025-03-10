@@ -26,8 +26,7 @@ object GameListe
 data class GameInfor(val id :Long)
 
 
-//remettre bien tout dans database
-//bouton pour revenir en haut de l'appli
+
 
 class MainActivity : ComponentActivity() {
 
