@@ -3,6 +3,7 @@ package com.insa.mygamelist.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
+//pour la database
 @Entity(tableName = "games")
 data class GameEntity(
     @PrimaryKey val id: Long,

@@ -19,9 +19,9 @@ object IGDB {
 
     var games = mutableStateListOf<Game>()
 
-    var isLoading = mutableStateOf(false)
+    var isLoading = mutableStateOf(false) //pour le démarrage
 
-    var isLoading2= mutableStateOf(false)
+    var isLoading2= mutableStateOf(false) //pour le scrolling
 
     private lateinit var db: GameDatabase
 
