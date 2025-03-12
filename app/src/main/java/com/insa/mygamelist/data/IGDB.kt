@@ -118,7 +118,11 @@ fun GameEntity.toGame(): Game {
         cover = mapOf("image_id" to (this.coverUrl ?: "")),
         first_release_date = this.releaseDate ?: 0L,
         genres = this.genres?.split(";")?.map { mapOf("name" to it) } ?: listOf(mapOf("name" to "Non disponible")),
-        platforms = this.platforms?.split(";")?.map { Platform(null, it, null) } ?: emptyList(),
+        platforms = this.platforms?.split(";")?.mapIndexed { index, platformName ->
+            val logos = this.platform_logos?.split(";") ?: emptyList()
+            Platform(null, platformName, PlatformLogo(null, logos.getOrNull(index)))
+        } ?: emptyList()
+        ,
         summary = this.summary ?: "Résumé par défaut",
         total_rating = this.rating ?: ""
     )
@@ -131,8 +135,13 @@ fun Game.toGameEntity(): GameEntity {
         summary = summary ?: null,
         rating = total_rating?.toString() ?: "0",
         coverUrl = cover?.get("image_id") ?: null,
-        genres = genres?.joinToString(",") { it["name"] ?: "" } ?: null,
+        genres = genres?.joinToString(", ") { it["name"] ?: "" } ?: null,
         platforms = platforms?.joinToString(",") { it.name ?: "" } ?: "",
+        platform_logos = platforms
+            ?.mapNotNull { it.platform_logo?.image_id }
+            ?.takeIf { it.isNotEmpty() }
+            ?.joinToString(",")
+            ?: "",
         releaseDate = first_release_date
     )
 }

@@ -11,6 +11,7 @@ data class GameEntity(
     val releaseDate: Long?,
     val genres: String?,
     val platforms: String?,
+    val platform_logos: String?,
     val summary: String?,
     val rating: String?
 )
