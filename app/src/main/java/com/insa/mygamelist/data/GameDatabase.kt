@@ -7,6 +7,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 
+//permet de garder jeu hors ligne
 @Database(entities = [GameEntity::class], version = 2) //version à changer dès que je change database
 @TypeConverters
 abstract class GameDatabase : RoomDatabase() {

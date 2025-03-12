@@ -59,9 +59,9 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
         LoadingScreen()
     } else {
         var searchQuery by rememberSaveable { mutableStateOf("") }
-        var isSearchVisible by rememberSaveable { mutableStateOf(false) }
-        var showOnlyFavorites by rememberSaveable { mutableStateOf(false) }
-        val listState = rememberLazyListState()
+        var isSearchVisible by rememberSaveable { mutableStateOf(false) } //gérer la barre de recherche
+        var showOnlyFavorites by rememberSaveable { mutableStateOf(false) } //gérer les favoris
+        val listState = rememberLazyListState() //pour pouvoir remonter en haut
         val coroutineScope = rememberCoroutineScope()
         val showScrollToTopButton by remember {
             derivedStateOf { listState.firstVisibleItemIndex > 5 }
@@ -175,12 +175,12 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
                 ) {
                     items(filteredGames.size) { index ->
 
-                        GameCase(navController, favoriteGames, filteredGames, index)
+                        GameCase(navController, favoriteGames, filteredGames, index) //les jeux
 
                     }
 
 
-
+                    //si on atteint la fin de la liste on load plus de jeux
                     item {
                         if (isLoading2.value) {
                             Row(
