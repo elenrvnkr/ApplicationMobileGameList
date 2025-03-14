@@ -2,7 +2,7 @@ On a fait tout les tps jusqu'au tp facultatif.
 
 On a plus de bases de données en clair et tout est pris sur IGDB.
 
-Pour que l'appli marche il faut créer un clientid et un clientsecret sur un autre fichier à côté OU mettre directement le clientid ou le clientsecret dans le fichier GérerToken dans la fonction fetchNewToken et dans le fichier IGDB dans la fonction fetchGames à la place de clientid et clientsecret.
+Pour que l'appli marche il faut créer un clientid et un clientsecret sur un autre fichier à côté OU mettre directement le clientid ou le clientsecret dans le fichier GérerToken dans la fonction fetchNewToken et dans le fichier request dans la fonction fetchGames à la place de clientid et clientsecret.
 
 Du TP bonus, on a fait : 
 - Mise en cache/mode offline
