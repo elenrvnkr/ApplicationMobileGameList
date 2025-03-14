@@ -1,7 +1,6 @@
 package com.insa.mygamelist.data
 
 import android.content.Context
-import android.util.Log
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -19,7 +18,6 @@ abstract class GameDatabase : RoomDatabase() {
 
         fun getDatabase(context: Context): GameDatabase {
             return INSTANCE ?: synchronized(this) {
-                Log.d("GameDatabase", "Creating database instance")
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     GameDatabase::class.java,

@@ -56,17 +56,16 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
     val isLoading by IGDB.isLoading
 
     if (isLoading) {
-        LoadingScreen()
+        LoadingScreen() // Au d"but
     } else {
-        var searchQuery by rememberSaveable { mutableStateOf("") }
+        var searchQuery by rememberSaveable { mutableStateOf("") } // La valeur dans ma barre de recherche
         var isSearchVisible by rememberSaveable { mutableStateOf(false) } //gérer la barre de recherche
         var showOnlyFavorites by rememberSaveable { mutableStateOf(false) } //gérer les favoris
         val listState = rememberLazyListState() //pour pouvoir remonter en haut
         val coroutineScope = rememberCoroutineScope()
         val showScrollToTopButton by remember {
             derivedStateOf { listState.firstVisibleItemIndex > 5 }
-
-        }
+        }  // Si j'ai dépassé les premiers jeux je veux voir le bouton pour revenir au début s'affiicher
 
         Scaffold(topBar = {
             TopAppBar(
@@ -74,7 +73,7 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
                     containerColor = Color(0, 109, 119),
                     titleContentColor = Color(237, 246, 255)
                 ),
-                title = {
+                title = { //Je vois soit le titre soit la barre de recherche
                     AnimatedVisibility(visible = !isSearchVisible) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Image(
@@ -148,7 +147,7 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
             }, modifier = Modifier
                 .fillMaxSize()
                 .background(Color(237, 246, 255))) { innerPadding ->
-            val filteredGames = IGDB.games.filter { game ->
+            val filteredGames = IGDB.games.filter { game -> // Filtrer les jeux selon ce que j'ai cherché (si j'ai rien cherché ils sont tous là)
                 (game.name?.contains(searchQuery, ignoreCase = true) == true) ||
                         (game.genres ?: emptyList()).any { genre ->
                             (genre["name"] ?: "").contains(searchQuery, ignoreCase = true)
@@ -157,7 +156,7 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
                             platform.name?.contains(searchQuery, ignoreCase = true) == true
                         } == true
             }.filter { game ->
-                if (showOnlyFavorites) {
+                if (showOnlyFavorites) { // Si en plus je montre que les favoris je vois que les favoris et je peux chercher dedans
                     favoriteGames?.contains(game.id) == true
 
                 } else {
@@ -195,13 +194,10 @@ fun GameList(navController: NavController, favoriteGames: List<Long>) {
                                 )
                             }
                         } else {
-                            LaunchedEffect(Unit) {
-                                IGDB.loadMoreGames()
-                            }
+                            IGDB.loadMoreGames()
+
                         }
                     }
-
-
                 }
             }
         }

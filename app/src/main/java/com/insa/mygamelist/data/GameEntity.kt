@@ -3,7 +3,7 @@ package com.insa.mygamelist.data
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-//pour la database
+// On récupère tout les games pour les mettre en string dans la database
 @Entity(tableName = "games")
 data class GameEntity(
     @PrimaryKey val id: Long,
@@ -23,7 +23,7 @@ fun GameEntity.toGame(): Game {
         id = this.id,
         name = this.name,
         cover = mapOf("image_id" to (this.coverUrl ?: "")),
-        first_release_date = this.releaseDate ?: 0L,
+        first_release_date = this.releaseDate ?: 0,
         genres = this.genres?.split(";")?.map { mapOf("name" to it) } ?: listOf(mapOf("name" to "Non disponible")),
         platforms = this.platforms?.split(";")?.mapIndexed { index, platformName ->
             val logos = this.platform_logos?.split(";") ?: emptyList()
@@ -56,10 +56,10 @@ fun Game.toGameEntity(): GameEntity {
 data class Game(val id: Long, val cover: Map<String, String>, val first_release_date: Long, val genres: List<Map<String,String>>, val name: String, val platforms: List<Platform>, val summary: String, val total_rating: String)
 data class PlatformLogo(
     val id: Int?,
-    val image_id: String?
+    val image_id: String? // L'url s'écrit https://images.igdb.com/igdb/image/upload/t_{size}/{image_id}.png
 )
 data class Platform(
     val id: Int?,
-    val name: String?,
+    val name: String?, // Pour l'accessibilité
     val platform_logo: PlatformLogo?
 )

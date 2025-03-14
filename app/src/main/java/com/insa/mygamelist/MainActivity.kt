@@ -1,7 +1,6 @@
 package com.insa.mygamelist
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,7 +16,7 @@ import com.insa.mygamelist.ui.theme.MyGamesListTheme
 import kotlinx.serialization.Serializable
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-import java.util.Date
+
 
 
 @Serializable
@@ -32,11 +31,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        IGDB.initDatabase(this)
-        IGDB.load(this)
-        GererFavoris.init(this)
-        Log.d("date", Date().time.toString())
-        Log.d("system milis",((System.currentTimeMillis() / 1000).toString()))
+        IGDB.initDatabase(this) //Récupère la database
+        IGDB.load(this) // Récupère les jeux chargés depuis l'IGDB
+        GererFavoris.init(this) // Récupère les favoris
 
         lifecycleScope.launch {
             GererFavoris.favoriteGames.collect { favorites ->
@@ -52,7 +49,7 @@ class MainActivity : ComponentActivity() {
             MyGamesListTheme {
 
 
-                    NavHost(navController, startDestination = GameListe) {
+                    NavHost(navController, startDestination = GameListe) { // Le navController permet de revenir en arrière, j(indique que je pars de la gameliste et j'indique les routes qu'il peut prendre
                         composable<GameListe> {
                             GameList(
                                 navController, favoriteGames) }
@@ -60,7 +57,8 @@ class MainActivity : ComponentActivity() {
                             val game = it.toRoute<GameInfor>()
                             GameInfo(
                                 navController,
-                                gamei = game, favoriteGames)}
+                                gamei = game, favoriteGames)
+                        }
                     }
                 }
             }

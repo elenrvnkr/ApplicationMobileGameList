@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 
-
+//Database (jeu hors ligne)
 @Dao
 interface GameDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)

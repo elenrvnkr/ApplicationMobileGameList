@@ -33,7 +33,7 @@ class GererFavoris(private val context: Context) {
                 instance.context.dataStore.edit { preferences ->
                     val currentFavorites =
                         preferences[FAVORITES_KEY]?.toMutableSet() ?: mutableSetOf()
-                    if (currentFavorites.contains(gameId.toString())) {
+                    if (currentFavorites.contains(gameId.toString())) { // Si on a déjà le jeu on l'enlève de la liste des favoris sinon on la rajoute
                         currentFavorites.remove(gameId.toString())
                     } else {
                         currentFavorites.add(gameId.toString())

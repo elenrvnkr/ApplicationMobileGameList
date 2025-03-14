@@ -2,7 +2,6 @@ package com.insa.mygamelist.data
 
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -11,8 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.coroutines.SupervisorJob
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
+
 
 
 object IGDB {
@@ -28,29 +26,25 @@ object IGDB {
     private var offset = 500
     private const val limit = 500
 
-    fun initDatabase(context: Context) {
+    fun initDatabase(context: Context) { // Récupérer database
         db = GameDatabase.getDatabase(context)
     }
 
     private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
-    fun load(context: Context) {
+    fun load(context: Context) { //load à l'ouverture de l'appli
         scope.launch {
-            withContext(Dispatchers.Main) {
-                isLoading.value = true
-            }
+            isLoading.value = true // Tant que je charge, je veux l'écran de chargement
+
 
             try {
-                TokenManager.init(context)
-                val gamesResponse = fetchGames(0)
-                saveToDatabase(gamesResponse)
+                TokenManager.init(context) // Avoir le token
+                val gamesResponse = fetchGames(0) // Récupérer mes jeux avec le token
+                saveToDatabase(gamesResponse) // Sauver ce que j'ai récupéré dans ma database
                 updateUI(gamesResponse)
 
-                withContext(Dispatchers.Main) {
-                    updateUI(gamesResponse)
-                }
             } catch (e: Exception) {
                 e.printStackTrace()
-                val cachedGames = loadFromDatabase()
+                val cachedGames = loadFromDatabase() // Si je n'ai pas réussi à récupérer mes jeux en ligne, je les prends de la database
                 if (cachedGames.isNotEmpty()) {
                     updateUI(cachedGames)
                 } else {
@@ -58,9 +52,8 @@ object IGDB {
                         Toast.makeText(context, "Erreur: ${e.message}", Toast.LENGTH_LONG).show()
                     }}
             }finally {
-                withContext(Dispatchers.Main) {
-                    isLoading.value = false
-                }
+                isLoading.value = false // Fin du chargement initial
+
             }}
     }
 
@@ -70,11 +63,10 @@ object IGDB {
         CoroutineScope(Dispatchers.IO).launch {
             isLoading2.value = true
             try {
-                val newGames = fetchGames(offset)
-                withContext(Dispatchers.Main) {
-                    games.addAll(newGames)
-                    offset += limit
-                }
+                val newGames = fetchGames(offset) // On change l'offset pour pas récupérer les mêmes jeux en boucle
+                games.addAll(newGames) // Même chose qu'updateUI sauf que je supprime pas les jeux déjà présents
+                offset += limit
+                saveToDatabase(newGames)
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
@@ -83,22 +75,13 @@ object IGDB {
         }
     }
 
-    private suspend fun fetchGames(offset: Int): List<Game> {
-        val token = TokenManager.getToken()
-        Log.d("token",token)
-        val body = "fields id, cover.image_id, first_release_date, genres.name, name, platforms.platform_logo.image_id, platforms.name, summary, total_rating; limit 500; offset $offset;"
-        val requestBody = body.toRequestBody("text/plain".toMediaType())
-        return RetrofitClient.instance.getGames("Bearer $token", clientId = clientid, body = requestBody) ?: emptyList()
-
-    }
-
     private suspend fun saveToDatabase(games: List<Game>) {
-        val gameEntities = games.map { it.toGameEntity() }
-        db.gameDao().insertGames(gameEntities)
+        val gameEntities = games.map { it.toGameEntity() } //je créé mes string que je vais mettre dans ma base de donnée
+        db.gameDao().insertGames(gameEntities) //je mets dans ma base de donnée
     }
 
     private suspend fun loadFromDatabase(): List<Game> {
-        return db.gameDao().getAllGames().map { it.toGame() }
+        return db.gameDao().getAllGames().map { it.toGame() } //je récupère les jeux dans  ma base de donnée
     }
 
     private fun updateUI(

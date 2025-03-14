@@ -24,10 +24,10 @@ object TokenManager {
     }
 
     suspend fun getToken(): String {
-        val currentToken = sharedPreferences.getString(TOKEN_KEY, null)
+        val currentToken = sharedPreferences.getString(TOKEN_KEY, null) //Récupère token et expiration time
         val expirationTime = sharedPreferences.getLong(TOKEN_EXPIRATION_KEY, 0)
 
-        if (currentToken == null || isTokenExpired(expirationTime)) {
+        if (currentToken == null || isTokenExpired(expirationTime)) { //si le token existe pas ou qu'il est expiré on en fait un autre sinon on garde
             return fetchNewToken()
         }
 
@@ -36,7 +36,7 @@ object TokenManager {
 
     private suspend fun fetchNewToken(): String {
         val url =
-            "$TOKEN_URL?client_id=$clientid&client_secret=$clientsecret&grant_type=client_credentials"
+            "$TOKEN_URL?client_id=$clientid&client_secret=$clientsecret&grant_type=client_credentials" //la même chose que le cURL
 
         val request = Request.Builder()
             .url(url)
@@ -68,6 +68,6 @@ object TokenManager {
     }
 
     private fun isTokenExpired(expirationTime: Long): Boolean {
-        return Date().time > expirationTime * 1000
+        return Date().time > expirationTime * 1000 // Date().time est en millisecondes
     }
 }
