@@ -38,7 +38,7 @@ object RetrofitClient {
         Retrofit.Builder()
             .baseUrl(BASE_URL)
             .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create()) // Conversion de fichier JSOn à des objets kotlin automatiquement
             .build()
             .create(IGDBService::class.java)
     }

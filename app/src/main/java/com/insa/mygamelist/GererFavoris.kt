@@ -17,7 +17,7 @@ class GererFavoris(private val context: Context) {
     companion object {
         @SuppressLint("StaticFieldLeak")
         private lateinit var instance: GererFavoris
-        private val FAVORITES_KEY = stringSetPreferencesKey("favorite_games")
+        private val FAVORITES_KEY = stringSetPreferencesKey("favorite_games") // Clé pour stocker les favoris
 
         fun init(context: Context) {
             instance = GererFavoris(context)

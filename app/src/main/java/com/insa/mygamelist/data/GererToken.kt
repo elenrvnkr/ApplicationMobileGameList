@@ -12,7 +12,7 @@ import java.util.Date
 
 object TokenManager {
 
-    private const val PREFS_NAME = "IGDB_PREFS"
+    private const val PREFS_NAME = "IGDB_PREFS" //Nom de notre stockage
     private const val TOKEN_KEY = "IGDB_TOKEN"
     private const val TOKEN_EXPIRATION_KEY = "IGDB_TOKEN_EXPIRATION"
     private const val TOKEN_URL = "https://id.twitch.tv/oauth2/token"
@@ -50,14 +50,14 @@ object TokenManager {
         if (!response.isSuccessful) throw Exception("Erreur de récupération du token : ${response.code}")
 
         val responseBody = response.body?.string() ?: throw Exception("Réponse vide")
-        val json = JSONObject(responseBody)
+        val json = JSONObject(responseBody) // La réponse est en Json
         val newToken = json.getString("access_token")
         val expiresIn = json.getLong("expires_in") // Durée de validité (en secondes)
 
         val expirationTime = (Date().time / 1000) + expiresIn
 
         withContext(Dispatchers.IO) {
-            sharedPreferences.edit().apply {
+            sharedPreferences.edit().apply { //Stocke le nouveau token
                 putString(TOKEN_KEY, newToken)
                 putLong(TOKEN_EXPIRATION_KEY, expirationTime)
                 apply()

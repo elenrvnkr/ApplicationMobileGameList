@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
         IGDB.load(this) // Récupère les jeux chargés depuis l'IGDB
         GererFavoris.init(this) // Récupère les favoris
 
-        lifecycleScope.launch {
+        lifecycleScope.launch { // mets à jour les favoris selon les changements
             GererFavoris.favoriteGames.collect { favorites ->
                 favoriteGames.clear()
                 favoriteGames.addAll(favorites)

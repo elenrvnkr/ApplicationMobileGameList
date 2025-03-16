@@ -17,12 +17,12 @@ abstract class GameDatabase : RoomDatabase() {
         private var INSTANCE: GameDatabase? = null
 
         fun getDatabase(context: Context): GameDatabase {
-            return INSTANCE ?: synchronized(this) {
+            return INSTANCE ?: synchronized(this) { //synchronisation pour éviter de doubler la database
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     GameDatabase::class.java,
                     "game_database"
-                ).fallbackToDestructiveMigration()
+                ).fallbackToDestructiveMigration() // supprime la database si la version change
                     .build()
                 INSTANCE = instance
                 instance
